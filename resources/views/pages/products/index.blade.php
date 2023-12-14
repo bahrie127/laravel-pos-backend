@@ -67,7 +67,7 @@
 
                                             <th>Name</th>
                                             <th>Category</th>
-                                            <th>Stock</th>
+                                            <th>Price</th>
                                             <th>Created At</th>
                                             <th>Action</th>
                                         </tr>
@@ -79,7 +79,9 @@
                                                 <td>
                                                     {{ $product->category }}
                                                 </td>
-
+                                                <td>
+                                                    {{ $product->price }}
+                                                </td>
                                                 <td>{{ $product->created_at }}</td>
                                                 <td>
                                                     <div class="d-flex justify-content-center">
