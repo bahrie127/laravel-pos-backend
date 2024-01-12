@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            //is_favorite
+            //is_best_seller
             $table->boolean('is_best_seller')->default(false);
         });
     }
