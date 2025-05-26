@@ -47,4 +47,15 @@ class OrderController extends Controller
             'message' => 'Order Created'
         ], 201);
     }
+
+    //get order by kasir id
+    public function getByKasirId($kasir_id)
+    {
+        $orders = \App\Models\Order::where('kasir_id', $kasir_id)->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $orders
+        ]);
+    }
 }

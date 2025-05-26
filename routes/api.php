@@ -29,6 +29,8 @@ Route::apiResource('products', \App\Http\Controllers\Api\ProductController::clas
 
 // api resource order
 Route::apiResource('orders', \App\Http\Controllers\Api\OrderController::class)->middleware('auth:sanctum');
+// get order by kasir id
+Route::get('orders/kasir/{kasir_id}', [\App\Http\Controllers\Api\OrderController::class, 'getByKasirId'])->middleware('auth:sanctum');
 
 // get categories
 Route::get('list-categories', [\App\Http\Controllers\Api\CategoryController::class, 'index'])->middleware('auth:sanctum');
