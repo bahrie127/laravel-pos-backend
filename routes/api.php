@@ -39,3 +39,8 @@ Route::get('list-categories', [\App\Http\Controllers\Api\CategoryController::cla
 Route::get('/reports/summary', [App\Http\Controllers\Api\ReportController::class, 'summary'])->middleware('auth:sanctum');
 Route::get('/reports/product-sales', [App\Http\Controllers\Api\ReportController::class, 'productSales'])->middleware('auth:sanctum');
 Route::get('/reports/close-cashier', [App\Http\Controllers\Api\ReportController::class, 'closeCashier'])->middleware('auth:sanctum');
+
+// api resource cashier shift
+Route::post('/cashier-shifts/open', [\App\Http\Controllers\Api\CashierShiftController::class, 'openShift'])->middleware('auth:sanctum');
+Route::post('/cashier-shifts/close', [\App\Http\Controllers\Api\CashierShiftController::class, 'closeShift'])->middleware('auth:sanctum');
+Route::get('/get-cashier-shifts/open', [\App\Http\Controllers\Api\CashierShiftController::class, 'getShiftOpen'])->middleware('auth:sanctum');
