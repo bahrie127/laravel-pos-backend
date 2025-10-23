@@ -74,7 +74,21 @@
                                     </div>
                                 @enderror
                             </div>
-                            <div class="form-group">
+
+                            <div class="form-group mt-3">
+                                <label>Category</label>
+                                <select class="form-control selectric" name="category_id">
+                                    <option value="" selected disabled>Choose Category</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}"
+                                            @if ($category->id == $product->category_id) selected @endif>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            {{-- <div class="form-group">
                                 <label class="form-label">Category</label>
                                 <div class="selectgroup w-100">
                                     <label class="selectgroup-item">
@@ -94,7 +108,7 @@
                                     </label>
 
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                         <div class="card-footer text-right">
                             <button class="btn btn-primary">Submit</button>

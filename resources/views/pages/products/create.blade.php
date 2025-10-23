@@ -71,7 +71,7 @@
                                 @enderror
                             </div>
 
-                            <div class="form-group">
+                            {{-- <div class="form-group">
                                 <label class="form-label">Category</label>
                                 <div class="selectgroup w-100">
                                     <label class="selectgroup-item">
@@ -89,26 +89,43 @@
                                     </label>
 
                                 </div>
-                            </div>
+                            </div> --}}
 
-                            <div class="form-group">
-                                <label>Photo Product</label>
-                                <div class="col-sm-9">
-                                    <input type="file" class="form-control" name="image"
-                                        @error('image') is-invalid @enderror>
-                                </div>
-                                @error('image')
+
+                            <div
+                                class="form-group
+                                @error('category_id') is-invalid @enderror">
+                                <label>Category</label>
+                                <select class="form-control selectric" name="category_id">
+                                    <option value="">Pilih Kategori</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('category_id')
                                     <div class="invalid-feedback">
                                         {{ $message }}
                                     </div>
                                 @enderror
+
+                                <div class="form-group">
+                                    <label>Photo Product</label>
+                                    <div class="col-sm-9">
+                                        <input type="file" class="form-control" name="image"
+                                            @error('image') is-invalid @enderror>
+                                    </div>
+                                    @error('image')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+
+
                             </div>
-
-
-                        </div>
-                        <div class="card-footer text-right">
-                            <button class="btn btn-primary">Submit</button>
-                        </div>
+                            <div class="card-footer text-right">
+                                <button class="btn btn-primary">Submit</button>
+                            </div>
                     </form>
                 </div>
 

@@ -23,7 +23,9 @@ class ProductController extends Controller
 
     public function create()
     {
-        return view('pages.products.create');
+        //categories
+        $categories = DB::table('categories')->get();
+        return view('pages.products.create', compact('categories'));
     }
 
     public function store(Request $request)
@@ -32,7 +34,7 @@ class ProductController extends Controller
             'name' => 'required|min:3|unique:products',
             'price' => 'required|integer',
             'stock' => 'required|integer',
-            'category' => 'required|in:food,drink,snack',
+            'category_id' => 'required',
             'image' => 'required|image|mimes:png,jpg,jpeg'
         ]);
 
@@ -40,11 +42,14 @@ class ProductController extends Controller
         $request->image->storeAs('public/products', $filename);
         $data = $request->all();
 
+        $category = DB::table('categories')->where('id', $request->category_id)->first();
+
         $product = new \App\Models\Product;
         $product->name = $request->name;
         $product->price = (int) $request->price;
         $product->stock = (int) $request->stock;
-        $product->category = $request->category;
+        $product->category_id = $request->category_id;
+        $product->category = $category->name;
         $product->image = $filename;
         $product->save();
 
@@ -54,13 +59,16 @@ class ProductController extends Controller
     public function edit($id)
     {
         $product = \App\Models\Product::findOrFail($id);
-        return view('pages.products.edit', compact('product'));
+        $categories = DB::table('categories')->get();
+        return view('pages.products.edit', compact('product', 'categories'));
     }
 
     public function update(Request $request, $id)
     {
         $data = $request->all();
         $product = \App\Models\Product::findOrFail($id);
+        $category = DB::table('categories')->where('id', $request->category_id)->first();
+        $data['category'] = $category->name;
         $product->update($data);
         return redirect()->route('product.index')->with('success', 'Product successfully updated');
     }

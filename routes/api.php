@@ -29,3 +29,13 @@ Route::apiResource('products', \App\Http\Controllers\Api\ProductController::clas
 
 // api resource order
 Route::apiResource('orders', \App\Http\Controllers\Api\OrderController::class)->middleware('auth:sanctum');
+
+// api resource category
+Route::get('list-categories', [\App\Http\Controllers\Api\CategoryController::class, 'index'])->middleware('auth:sanctum');
+
+// api resource report
+Route::get('/reports/summary', [App\Http\Controllers\Api\ReportController::class, 'summary'])->middleware('auth:sanctum');
+Route::get('/reports/product-sales', [App\Http\Controllers\Api\ReportController::class, 'productSales'])->middleware('auth:sanctum');
+
+// close cashier
+Route::post('/close-cashier', [App\Http\Controllers\Api\CloseCashierController::class, 'close'])->middleware('auth:sanctum');

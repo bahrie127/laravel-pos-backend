@@ -25,6 +25,12 @@
 
             </li>
 
+            <li class="nav-item">
+                <a href="{{ route('categories.index') }}" class="nav-link "><i
+                        class="fas fa-fire"></i><span>Categories</span></a>
+
+            </li>
+
             <li class="nav-item ">
                 <a href="{{ route('product.index') }}" class="nav-link"><i
                         class="fas fa-fire"></i><span>Products</span></a>

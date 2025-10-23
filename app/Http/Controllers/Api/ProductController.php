@@ -30,17 +30,19 @@ class ProductController extends Controller
             'name' => 'required|min:3',
             'price' => 'required|integer',
             'stock' => 'required|integer',
-            'category' => 'required|in:food,drink,snack',
+            'category_id' => 'required',
             'image' => 'required|image|mimes:png,jpg,jpeg'
         ]);
 
         $filename = time() . '.' . $request->image->extension();
         $request->image->storeAs('public/products', $filename);
+        $category = \App\Models\Category::where('id', $request->category_id)->first();
         $product = \App\Models\Product::create([
             'name' => $request->name,
             'price' => (int) $request->price,
             'stock' => (int) $request->stock,
-            'category' => $request->category,
+            'category_id' => $request->category_id,
+            'category' => $category->name,
             'image' => $filename,
             'is_favorite' => $request->is_favorite
         ]);
