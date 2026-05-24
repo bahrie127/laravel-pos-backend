@@ -1,66 +1,108 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel POS Backend — FIC11 Jilid 2
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Backend Laravel untuk aplikasi POS (Point of Sale) yang dipakai oleh Flutter mobile app. Project ini berisi REST API (Sanctum-protected) untuk app kasir, plus admin web panel (Fortify auth) untuk manajemen master data dan reporting.
 
-## About Laravel
+## Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+| Komponen | Versi |
+|---|---|
+| Laravel Framework | **13.11.2** |
+| PHP | **^8.3** (diuji pada 8.3.22) |
+| laravel/sanctum | ^4.3 (API token auth) |
+| laravel/fortify | ^1.37 (web auth scaffolding) |
+| laravel/tinker | ^3.0 |
+| resend/resend-laravel | ^1.0 (mail driver) |
+| PHPUnit | ^12 |
+| Database | MySQL |
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Struktur Utama
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```
+app/
+├── Http/
+│   ├── Controllers/        # Web controllers (User, Product, Order, Category)
+│   ├── Controllers/Api/    # API controllers (Auth, Product, Order, Category, Report)
+│   ├── Middleware/         # Laravel 10-style middleware (Kernel.php)
+│   └── Kernel.php
+├── Models/                 # User, Product, Category, Order, OrderItem
+├── Actions/Fortify/        # Fortify user actions
+└── Providers/              # AppServiceProvider, RouteServiceProvider, FortifyServiceProvider, dll
+database/migrations/        # 12 migrations (users, products, orders, order_items, categories, dll)
+resources/views/pages/      # auth, categories, dashboard, orders, products, users
+routes/
+├── api.php                 # REST endpoints (Sanctum)
+└── web.php                 # Admin panel
+```
 
-## Learning Laravel
+Catatan: Project ini masih memakai struktur Laravel 10 lama (`bootstrap/app.php` klasik, `app/Http/Kernel.php`, `app/Console/Kernel.php`, `app/Exceptions/Handler.php`, `RouteServiceProvider`). Struktur ini tetap kompatibel di Laravel 13 (backwards compat) — tidak dimigrasikan ke `Application::configure()` style baru.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## API Endpoints
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Semua endpoint di bawah `/api` dan (kecuali `login`) dilindungi `auth:sanctum`.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| POST | `/api/login` | Login, kembalikan plain text token |
+| POST | `/api/logout` | Hapus current token |
+| GET | `/api/user` | Info user yang login |
+| GET/POST/PUT/DELETE | `/api/products` | Resource Product |
+| GET/POST/PUT/DELETE | `/api/orders` | Resource Order |
+| GET | `/api/orders/kasir/{kasir_id}` | Order milik kasir tertentu |
+| GET | `/api/list-categories` | List kategori |
+| GET | `/api/reports/summary` | Ringkasan transaksi |
+| GET | `/api/reports/product-sales` | Penjualan per produk |
+| GET | `/api/reports/close-cashier` | Tutup kasir |
 
-## Laravel Sponsors
+## Admin Web Panel
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Setelah login via Fortify (`/login`), tersedia route resource untuk: `user`, `product`, `order`, `categories`, plus dashboard di `/home`. UI dibangun di atas Bootstrap (lihat `public/library/` untuk CSS/JS vendor assets — chart.js, datatables, dropzone, fullcalendar, dll).
 
-### Premium Partners
+## Setup Lokal
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+```bash
+# 1. Install dependencies
+composer install
 
-## Contributing
+# 2. Copy env dan generate key
+cp .env.example .env
+php artisan key:generate
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# 3. Atur DB di .env (default: mysql, db name `fic11jilid2-db`)
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=fic11jilid2-db
+DB_USERNAME=root
+DB_PASSWORD=
 
-## Code of Conduct
+# 4. Migrate
+php artisan migrate
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 5. Jalankan dev server
+php artisan serve
+```
 
-## Security Vulnerabilities
+## Testing
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan test
+```
+
+## Frontend (Flutter)
+
+Project FE mobile app yang mengkonsumsi API ini berada di:
+
+```
+/Users/bahri/development/fic11/flutter_pos_app
+```
+
+## Branch
+
+- `master` — main branch
+- `fulljilid2` — branch aktif (Laravel 13 upgrade)
+
+Remote: `git@github.com:bahrie127/laravel-pos-backend.git`
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT.
