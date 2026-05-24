@@ -49,13 +49,14 @@
 
         @auth
             <div class="sidebar-user-card">
-                <div class="d-flex align-items-center mb-2">
-                    <span class="avatar mr-2">{{ initials(auth()->user()->name) }}</span>
+                <a href="{{ route('profile.show') }}" class="d-flex align-items-center mb-2 text-reset text-decoration-none">
+                    <img src="{{ auth()->user()->avatar_url }}" alt=""
+                        style="width:36px;height:36px;border-radius:50%;object-fit:cover;margin-right:8px;">
                     <div class="flex-grow-1" style="min-width:0;">
                         <div class="font-weight-bold text-truncate" style="font-size:13px;">{{ auth()->user()->name }}</div>
                         <div class="text-muted text-truncate" style="font-size:11px;">{{ auth()->user()->email }}</div>
                     </div>
-                </div>
+                </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="sidebar-logout-btn">

@@ -1,26 +1,25 @@
 @extends('layouts.app')
 
-@section('title', 'Users')
-
-@push('style')
-    <!-- CSS Libraries -->
-    <link rel="stylesheet" href="{{ asset('library/selectric/public/selectric.css') }}">
-@endpush
+@section('title', 'Pengguna')
 
 @section('main')
     <div class="main-content">
         <section class="section">
             <div class="section-header">
-                <h1>Users</h1>
+                <h1>Pengguna</h1>
                 <div class="section-header-button">
-                    <a href="{{ route('user.create') }}" class="btn btn-primary">Add New</a>
+                    @can('create', App\Models\User::class)
+                        <a href="{{ route('user.create') }}" class="btn btn-primary">
+                            <i class="fas fa-plus mr-1"></i> Tambah Pengguna
+                        </a>
+                    @endcan
                 </div>
                 <div class="section-header-breadcrumb">
-                    <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
-                    <div class="breadcrumb-item"><a href="#">Users</a></div>
-                    <div class="breadcrumb-item">All Users</div>
+                    <div class="breadcrumb-item active"><a href="{{ route('home') }}">Dashboard</a></div>
+                    <div class="breadcrumb-item">Pengguna</div>
                 </div>
             </div>
+
             <div class="section-body">
                 <div class="row">
                     <div class="col-12">
@@ -28,83 +27,133 @@
                     </div>
                 </div>
 
-
-                <div class="row mt-4">
+                {{-- Filter --}}
+                <div class="row">
                     <div class="col-12">
-                        <div class="card">
-
-                            <div class="card-body">
-
-                                <div class="float-right">
-                                    <form method="GET" action="{{ route('user.index') }}">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" placeholder="Search" name="name">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-primary"><i class="fas fa-search"></i></button>
-                                            </div>
-                                        </div>
-                                    </form>
+                        <div class="card-clean">
+                            <form method="GET" action="{{ route('user.index') }}">
+                                <div class="form-row">
+                                    <div class="col-md-5 form-group">
+                                        <label class="text-muted" style="font-size:12px;">Cari nama / email</label>
+                                        <input type="text" name="q" value="{{ request('q') }}" class="form-control" placeholder="Cari...">
+                                    </div>
+                                    <div class="col-md-4 form-group">
+                                        <label class="text-muted" style="font-size:12px;">Role</label>
+                                        <select name="role" class="form-control">
+                                            <option value="">Semua role</option>
+                                            @foreach ($roleOptions as $value => $label)
+                                                <option value="{{ $value }}" @selected(request('role') === $value)>{{ $label }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 form-group d-flex align-items-end">
+                                        <button type="submit" class="btn btn-primary mr-2">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                        <a href="{{ route('user.index') }}" class="btn btn-outline-secondary">Reset</a>
+                                    </div>
                                 </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
-                                <div class="clearfix mb-3"></div>
-
-                                @if ($users->count() > 0)
-                                    <div class="table-responsive">
-                                        <table class="table-striped table">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card-clean">
+                            @if ($users->count() > 0)
+                                <div class="table-responsive">
+                                    <table class="table-striped table">
+                                        <thead>
                                             <tr>
                                                 <th></th>
                                                 <th>Nama</th>
-                                                <th>Email</th>
-                                                <th>No. HP</th>
-                                                <th>Bergabung</th>
+                                                <th>Email & HP</th>
+                                                <th class="text-center">Role</th>
+                                                <th class="text-center">Status</th>
+                                                <th>Login Terakhir</th>
                                                 <th class="text-center">Aksi</th>
                                             </tr>
-                                            @foreach ($users as $user)
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($users as $u)
+                                                @php $role = $u->role(); @endphp
                                                 <tr>
                                                     <td>
-                                                        <span class="avatar" style="display:inline-flex;width:36px;height:36px;border-radius:50%;background:#3B82F6;color:#fff;align-items:center;justify-content:center;font-weight:600;font-size:13px;">
-                                                            {{ initials($user->name) }}
-                                                        </span>
+                                                        <img src="{{ $u->avatar_url }}" alt=""
+                                                            style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
                                                     </td>
-                                                    <td class="font-weight-bold">{{ $user->name }}</td>
-                                                    <td>{{ $user->email }}</td>
-                                                    <td>{{ $user->phone ?? '—' }}</td>
-                                                    <td>{{ formatDate($user->created_at, 'd M Y') }}</td>
+                                                    <td>
+                                                        <div class="font-weight-bold">{{ $u->name }}</div>
+                                                        <div class="text-muted" style="font-size:12px;">Bergabung {{ formatDate($u->created_at, 'd M Y') }}</div>
+                                                    </td>
+                                                    <td>
+                                                        <div>{{ $u->email }}</div>
+                                                        <div class="text-muted" style="font-size:12px;">{{ $u->phone ?? '—' }}</div>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        @if ($role)
+                                                            <span class="badge {{ $role->badgeClass() }}">{{ $role->label() }}</span>
+                                                        @else
+                                                            <span class="badge badge-soft-secondary">—</span>
+                                                        @endif
+                                                    </td>
+                                                    <td class="text-center">
+                                                        @if ($u->is_active)
+                                                            <span class="badge badge-soft-success">Aktif</span>
+                                                        @else
+                                                            <span class="badge badge-soft-secondary">Nonaktif</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        @if ($u->last_login_at)
+                                                            <div>{{ $u->last_login_at->translatedFormat('d M Y H:i') }}</div>
+                                                            <div class="text-muted" style="font-size:12px;">{{ $u->last_login_ip ?? '—' }}</div>
+                                                        @else
+                                                            <span class="text-muted" style="font-size:12px;">Belum pernah</span>
+                                                        @endif
+                                                    </td>
                                                     <td>
                                                         <div class="d-flex justify-content-center">
-                                                            <a href='{{ route('user.edit', $user->id) }}'
-                                                                class="btn btn-sm btn-info btn-icon">
-                                                                <i class="fas fa-edit"></i> Edit
-                                                            </a>
-
-                                                            <form action="{{ route('user.destroy', $user->id) }}" method="POST" class="ml-2">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="btn btn-sm btn-danger btn-icon confirm-delete"
-                                                                    data-title="Hapus pengguna?"
-                                                                    data-text="Pengguna '{{ $user->name }}' akan dihapus.">
-                                                                    <i class="fas fa-trash"></i> Hapus
-                                                                </button>
-                                                            </form>
+                                                            @can('update', $u)
+                                                                <a href='{{ route('user.edit', $u->id) }}' class="btn btn-sm btn-info btn-icon">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </a>
+                                                            @endcan
+                                                            @can('delete', $u)
+                                                                <form action="{{ route('user.destroy', $u->id) }}" method="POST" class="ml-2">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="btn btn-sm btn-danger btn-icon confirm-delete"
+                                                                        data-title="Hapus pengguna?"
+                                                                        data-text="Pengguna '{{ $u->name }}' akan dihapus.">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </button>
+                                                                </form>
+                                                            @endcan
                                                         </div>
                                                     </td>
                                                 </tr>
                                             @endforeach
-                                        </table>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <div class="text-muted" style="font-size:13px;">
+                                        Menampilkan {{ $users->firstItem() }}–{{ $users->lastItem() }}
+                                        dari {{ $users->total() }} pengguna
                                     </div>
-                                    <div class="float-right">
-                                        {{ $users->withQueryString()->links() }}
-                                    </div>
-                                @else
-                                    <x-empty-state
-                                        icon="users"
-                                        title="Belum ada pengguna"
-                                        description="Tambahkan pengguna untuk mengakses panel admin."
-                                        :action-label="'Tambah Pengguna'"
-                                        :action-url="route('user.create')"
-                                    />
-                                @endif
-                            </div>
+                                    <div>{{ $users->links() }}</div>
+                                </div>
+                            @else
+                                <x-empty-state
+                                    icon="users"
+                                    title="Belum ada pengguna"
+                                    description="Tambahkan pengguna untuk akses panel admin."
+                                    :action-label="auth()->user()->can('create', App\Models\User::class) ? 'Tambah Pengguna' : null"
+                                    :action-url="auth()->user()->can('create', App\Models\User::class) ? route('user.create') : null"
+                                />
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -112,11 +161,3 @@
         </section>
     </div>
 @endsection
-
-@push('scripts')
-    <!-- JS Libraies -->
-    <script src="{{ asset('library/selectric/public/jquery.selectric.min.js') }}"></script>
-
-    <!-- Page Specific JS File -->
-    <script src="{{ asset('js/page/features-posts.js') }}"></script>
-@endpush
