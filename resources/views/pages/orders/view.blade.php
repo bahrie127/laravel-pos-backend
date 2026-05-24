@@ -25,60 +25,69 @@
                         @include('layouts.alert')
                     </div>
                 </div>
-                <h2 class="section-title">Order Detail</h2>
-                <p class="section-lead">
-                <div>Total Price {{ $order->total_price }}</div>
-                <div>Transaction Time {{ $order->transaction_time }}</div>
-                <div>Total Item {{ $order->total_item }}</div>
-
-                </p>
-
-
                 <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4>All Products</h4>
-                            </div>
-                            <div class="card-body">
-
-
-
-                                <div class="clearfix mb-3"></div>
-
-                                <div class="table-responsive">
-                                    <table class="table-striped table">
+                    <div class="col-lg-8 col-12">
+                        <div class="card-clean">
+                            <h4 class="mb-3">Item Pesanan</h4>
+                            <div class="table-responsive">
+                                <table class="table table-striped mb-0">
+                                    <thead>
                                         <tr>
-
-                                            <th>Product Name</th>
-                                            <th>Price</th>
-                                            <th>Quantity</th>
-                                            <th>Total Price</th>
-
+                                            <th>Produk</th>
+                                            <th class="text-right">Harga</th>
+                                            <th class="text-center">Qty</th>
+                                            <th class="text-right">Subtotal</th>
                                         </tr>
+                                    </thead>
+                                    <tbody>
                                         @foreach ($orderItems as $item)
                                             <tr>
-
-                                                <td>{{ $item->product->name }}</td>
-                                                </td>
                                                 <td>
-                                                    {{ $item->product->price }}
+                                                    <div class="d-flex align-items-center">
+                                                        @if ($item->product?->image)
+                                                            <img src="{{ asset('storage/products/' . $item->product->image) }}"
+                                                                style="width:40px;height:40px;object-fit:cover;border-radius:6px;margin-right:8px;">
+                                                        @endif
+                                                        <span class="font-weight-bold">{{ $item->product->name ?? '—' }}</span>
+                                                    </div>
                                                 </td>
-                                                <td>
-                                                    {{ $item->quantity }}
-                                                </td>
-                                                <td>
-                                                    {{ $item->total_price }}
-
-                                                </td>
-
+                                                <td class="text-right">{{ rupiah($item->product->price ?? 0) }}</td>
+                                                <td class="text-center">{{ $item->quantity }}</td>
+                                                <td class="text-right font-weight-bold">{{ rupiah($item->total_price) }}</td>
                                             </tr>
                                         @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
 
+                    <div class="col-lg-4 col-12">
+                        <div class="card-clean mb-3">
+                            <h4 class="mb-3">Ringkasan</h4>
+                            <div class="d-flex justify-content-between py-2 border-bottom">
+                                <span class="text-muted">Total Item</span>
+                                <span>{{ $order->total_item }} item</span>
+                            </div>
+                            <div class="d-flex justify-content-between py-2 border-bottom">
+                                <span class="text-muted">Pembayaran</span>
+                                <span class="badge badge-soft-secondary">{{ strtoupper($order->payment_method ?? '—') }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between py-3 mt-2" style="font-size:18px;font-weight:700;">
+                                <span>Total</span>
+                                <span>{{ rupiah($order->total_price) }}</span>
+                            </div>
+                        </div>
 
-                                    </table>
-                                </div>
-
+                        <div class="card-clean">
+                            <h4 class="mb-3">Informasi</h4>
+                            <div class="mb-2">
+                                <div class="text-muted" style="font-size:12px;">Waktu Transaksi</div>
+                                <div class="font-weight-bold">{{ $order->transaction_time?->translatedFormat('l, d F Y H:i') ?? '—' }}</div>
+                            </div>
+                            <div>
+                                <div class="text-muted" style="font-size:12px;">Kasir</div>
+                                <div class="font-weight-bold">{{ $order->kasir->name ?? '—' }}</div>
                             </div>
                         </div>
                     </div>

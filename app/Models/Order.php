@@ -9,17 +9,25 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable =
-    [
+    protected $fillable = [
         'transaction_time',
         'total_price',
         'total_item',
         'kasir_id',
-        'payment_method'
+        'payment_method',
+    ];
+
+    protected $casts = [
+        'transaction_time' => 'datetime',
     ];
 
     public function kasir()
     {
         return $this->belongsTo(User::class, 'kasir_id', 'id');
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
     }
 }

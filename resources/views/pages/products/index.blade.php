@@ -47,66 +47,78 @@
 
                                 <div class="clearfix mb-3"></div>
 
-                                <div class="table-responsive">
-                                    <table class="table-striped table">
-                                        <tr>
-
-                                            <th>Name</th>
-                                            <th>Category</th>
-                                            <th>Price</th>
-                                            <th>Photo</th>
-                                            <th>Created At</th>
-                                            <th>Action</th>
-                                        </tr>
-                                        @foreach ($products as $product)
+                                @if ($products->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table-striped table">
                                             <tr>
-
-                                                <td>{{ $product->name }}
-                                                </td>
-                                                <td>
-                                                    {{ $product->category }}
-                                                </td>
-                                                <td>
-                                                    {{ $product->price }}
-                                                </td>
-                                                <td>
-                                                    @if ($product->image)
-                                                        <img src="{{ asset('storage/products/' . $product->image) }}"
-                                                            alt="" width="100px" class="img-thumbnail">
-                                                    @else
-                                                        <span class="badge badge-danger">No Image</span>
-                                                    @endif
-
-                                                </td>
-                                                <td>{{ $product->created_at }}</td>
-                                                <td>
-                                                    <div class="d-flex justify-content-center">
-                                                        <a href='{{ route('product.edit', $product->id) }}'
-                                                            class="btn btn-sm btn-info btn-icon">
-                                                            <i class="fas fa-edit"></i>
-                                                            Edit
-                                                        </a>
-
-                                                        <form action="{{ route('product.destroy', $product->id) }}"
-                                                            method="POST" class="ml-2">
-                                                            <input type="hidden" name="_method" value="DELETE" />
-                                                            <input type="hidden" name="_token"
-                                                                value="{{ csrf_token() }}" />
-                                                            <button class="btn btn-sm btn-danger btn-icon confirm-delete">
-                                                                <i class="fas fa-times"></i> Delete
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </td>
+                                                <th>Foto</th>
+                                                <th>Nama</th>
+                                                <th>Kategori</th>
+                                                <th class="text-right">Harga</th>
+                                                <th class="text-center">Stok</th>
+                                                <th>Dibuat</th>
+                                                <th class="text-center">Aksi</th>
                                             </tr>
-                                        @endforeach
+                                            @foreach ($products as $product)
+                                                <tr>
+                                                    <td>
+                                                        @if ($product->image)
+                                                            <img src="{{ asset('storage/products/' . $product->image) }}"
+                                                                alt="{{ $product->name }}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;">
+                                                        @else
+                                                            <div style="width:56px;height:56px;border-radius:8px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;color:#9ca3af;">
+                                                                <i class="fas fa-image"></i>
+                                                            </div>
+                                                        @endif
+                                                    </td>
+                                                    <td class="font-weight-bold">{{ $product->name }}</td>
+                                                    <td>{{ $product->category ?? '—' }}</td>
+                                                    <td class="text-right font-weight-bold">{{ rupiah($product->price) }}</td>
+                                                    <td class="text-center">
+                                                        @if (! is_null($product->stock) && $product->stock == 0)
+                                                            <span class="badge badge-soft-danger">Habis</span>
+                                                        @elseif (! is_null($product->stock) && $product->stock < 5)
+                                                            <span class="badge badge-soft-warning">{{ $product->stock }} tersisa</span>
+                                                        @else
+                                                            <span>{{ $product->stock ?? '—' }}</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ formatDate($product->created_at, 'd M Y') }}</td>
+                                                    <td>
+                                                        <div class="d-flex justify-content-center">
+                                                            <a href='{{ route('product.edit', $product->id) }}'
+                                                                class="btn btn-sm btn-info btn-icon">
+                                                                <i class="fas fa-edit"></i> Edit
+                                                            </a>
 
-
-                                    </table>
-                                </div>
-                                <div class="float-right">
-                                    {{ $products->withQueryString()->links() }}
-                                </div>
+                                                            <form action="{{ route('product.destroy', $product->id) }}"
+                                                                method="POST" class="ml-2">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-sm btn-danger btn-icon confirm-delete"
+                                                                    data-title="Hapus produk?"
+                                                                    data-text="Produk '{{ $product->name }}' akan dihapus permanen.">
+                                                                    <i class="fas fa-trash"></i> Hapus
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </table>
+                                    </div>
+                                    <div class="float-right">
+                                        {{ $products->withQueryString()->links() }}
+                                    </div>
+                                @else
+                                    <x-empty-state
+                                        icon="box-open"
+                                        title="Belum ada produk"
+                                        description="Tambahkan produk pertama untuk mulai berjualan."
+                                        :action-label="'Tambah Produk'"
+                                        :action-url="route('product.create')"
+                                    />
+                                @endif
                             </div>
                         </div>
                     </div>

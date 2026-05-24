@@ -1,71 +1,87 @@
 @extends('layouts.auth')
 
-@section('title', 'Login POS')
-
-@push('style')
-    <!-- CSS Libraries -->
-    <link rel="stylesheet" href="{{ asset('library/bootstrap-social/bootstrap-social.css') }}">
-@endpush
+@section('title', 'Masuk')
 
 @section('main')
-    <div class="card card-primary">
-        <div class="card-header">
-            <h4>Login</h4>
-        </div>
-
-        <div class="card-body">
-            <form method="POST" action="{{ route('login') }}" class="needs-validation" novalidate="">
-                @csrf
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input id="email" type="email"
-                        class="form-control @error('email')
-                        is-invalid
-                    @enderror"
-                        name="email" tabindex="1" autofocus>
-                    @error('email')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
-
+    <div class="login-split">
+        {{-- Left: Form --}}
+        <div class="login-form-side">
+            <div class="login-form-card">
+                <div class="text-center mb-4">
+                    <img src="{{ asset('img/logo.svg') }}" alt="{{ config('app.name') }}" class="login-logo-mark">
+                    <div class="login-title">{{ config('app.name') }}</div>
+                    <div class="login-subtitle">Masuk untuk melanjutkan ke panel admin.</div>
                 </div>
 
-                <div class="form-group">
-                    <div class="d-block">
-                        <label for="password" class="control-label">Password</label>
+                @if (session('status'))
+                    <div class="alert alert-success">{{ session('status') }}</div>
+                @endif
 
-                    </div>
-                    <input id="password" type="password"
-                        class="form-control @error('password')
-                        is-invalid
-                    @enderror"
-                        name="password" tabindex="2">
-                    @error('password')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        @enderror
+                @if ($errors->any() && ! $errors->has('email') && ! $errors->has('password'))
+                    <div class="alert alert-danger">{{ $errors->first() }}</div>
+                @endif
 
-                    </div>
-
+                <form method="POST" action="{{ route('login') }}" class="needs-validation" novalidate>
+                    @csrf
 
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-lg btn-block" tabindex="4">
-                            Login
-                        </button>
+                        <label for="email">Email</label>
+                        <input id="email" type="email"
+                            class="form-control @error('email') is-invalid @enderror"
+                            name="email" value="{{ old('email') }}" tabindex="1" autofocus required>
+                        @error('email')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
-            </form>
 
+                    <div class="form-group">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label for="password" class="mb-0">Password</label>
+                            <a href="{{ route('password.request') }}" class="text-primary" style="font-size:13px;">
+                                Lupa password?
+                            </a>
+                        </div>
+                        <div class="password-toggle-wrap">
+                            <input id="password" type="password"
+                                class="form-control @error('password') is-invalid @enderror"
+                                name="password" tabindex="2" required>
+                            <button type="button" class="password-toggle-btn"
+                                data-password-toggle data-target="password" aria-label="Toggle password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        @error('password')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
 
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" name="remember" class="custom-control-input" id="remember-me" tabindex="3">
+                            <label class="custom-control-label" for="remember-me">Ingat saya</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg btn-block" tabindex="4">
+                        Masuk
+                    </button>
+                </form>
+
+                <div class="text-center text-muted mt-4" style="font-size:12px;">
+                    &copy; {{ date('Y') }} {{ config('app.name') }}
+                </div>
+            </div>
+        </div>
+
+        {{-- Right: brand panel --}}
+        <div class="login-brand-side">
+            <div class="text-center" style="max-width: 400px;">
+                <img src="{{ asset('img/logo.svg') }}" alt="" style="width:80px;height:80px;margin-bottom:24px;background:rgba(255,255,255,.15);padding:12px;border-radius:20px;">
+                <h2 style="font-weight:700;margin-bottom:12px;">Kelola Bisnis Anda dengan Mudah</h2>
+                <p style="opacity:.9;line-height:1.6;">
+                    Dashboard, produk, transaksi, dan laporan POS — semua dalam satu tempat.
+                </p>
+            </div>
         </div>
     </div>
-    {{-- <div class="text-muted mt-5 text-center">
-        Don't have an account? <a href="{{ route('register') }}">Create One</a>
-    </div> --}}
 @endsection
-
-@push('scripts')
-    <!-- JS Libraies -->
-
-    <!-- Page Specific JS File -->
-@endpush

@@ -36,41 +36,45 @@
 
                                 <div class="clearfix mb-3"></div>
 
-                                <div class="table-responsive">
-                                    <table class="table-striped table">
-                                        <tr>
-
-                                            <th>Transaction Time</th>
-                                            <th>Total Price</th>
-                                            <th>Total Item</th>
-                                            <th>Kasir</th>
-                                        </tr>
-                                        @foreach ($orders as $order)
+                                @if ($orders->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table-striped table">
                                             <tr>
-
-                                                <td><a
-                                                        href="{{ route('order.show', $order->id) }}">{{ $order->transaction_time }}</a>
-                                                </td>
-                                                <td>
-                                                    {{ $order->total_price }}
-                                                </td>
-                                                <td>
-                                                    {{ $order->total_item }}
-                                                </td>
-                                                <td>
-                                                    {{ $order->kasir->name }}
-
-                                                </td>
-
+                                                <th>Order</th>
+                                                <th>Waktu</th>
+                                                <th class="text-right">Total</th>
+                                                <th class="text-center">Item</th>
+                                                <th>Kasir</th>
+                                                <th class="text-center">Pembayaran</th>
                                             </tr>
-                                        @endforeach
-
-
-                                    </table>
-                                </div>
-                                <div class="float-right">
-                                    {{ $orders->withQueryString()->links() }}
-                                </div>
+                                            @foreach ($orders as $order)
+                                                <tr>
+                                                    <td>
+                                                        <a href="{{ route('order.show', $order->id) }}" class="font-weight-bold text-primary">
+                                                            #{{ $order->id }}
+                                                        </a>
+                                                    </td>
+                                                    <td>{{ $order->transaction_time?->translatedFormat('d M Y H:i') ?? '—' }}</td>
+                                                    <td class="text-right font-weight-bold">{{ rupiah($order->total_price) }}</td>
+                                                    <td class="text-center">{{ $order->total_item }}</td>
+                                                    <td>{{ $order->kasir->name ?? '—' }}</td>
+                                                    <td class="text-center">
+                                                        <span class="badge badge-soft-secondary">{{ strtoupper($order->payment_method ?? '—') }}</span>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </table>
+                                    </div>
+                                    <div class="float-right">
+                                        {{ $orders->withQueryString()->links() }}
+                                    </div>
+                                @else
+                                    <x-empty-state
+                                        icon="receipt"
+                                        title="Belum ada pesanan"
+                                        description="Pesanan dari aplikasi kasir akan muncul di sini."
+                                    />
+                                @endif
                             </div>
                         </div>
                     </div>

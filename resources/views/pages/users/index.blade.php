@@ -48,54 +48,62 @@
 
                                 <div class="clearfix mb-3"></div>
 
-                                <div class="table-responsive">
-                                    <table class="table-striped table">
-                                        <tr>
-
-                                            <th>Name</th>
-                                            <th>Email</th>
-
-                                            <th>Created At</th>
-                                            <th>Action</th>
-                                        </tr>
-                                        @foreach ($users as $user)
+                                @if ($users->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table-striped table">
                                             <tr>
-
-                                                <td>{{ $user->name }}
-                                                </td>
-                                                <td>
-                                                    {{ $user->email }}
-                                                </td>
-
-                                                <td>{{ $user->created_at }}</td>
-                                                <td>
-                                                    <div class="d-flex justify-content-center">
-                                                        <a href='{{ route('user.edit', $user->id) }}'
-                                                            class="btn btn-sm btn-info btn-icon">
-                                                            <i class="fas fa-edit"></i>
-                                                            Edit
-                                                        </a>
-
-                                                        <form action="{{ route('user.destroy', $user->id) }}" method="POST"
-                                                            class="ml-2">
-                                                            <input type="hidden" name="_method" value="DELETE" />
-                                                            <input type="hidden" name="_token"
-                                                                value="{{ csrf_token() }}" />
-                                                            <button class="btn btn-sm btn-danger btn-icon confirm-delete">
-                                                                <i class="fas fa-times"></i> Delete
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </td>
+                                                <th></th>
+                                                <th>Nama</th>
+                                                <th>Email</th>
+                                                <th>No. HP</th>
+                                                <th>Bergabung</th>
+                                                <th class="text-center">Aksi</th>
                                             </tr>
-                                        @endforeach
+                                            @foreach ($users as $user)
+                                                <tr>
+                                                    <td>
+                                                        <span class="avatar" style="display:inline-flex;width:36px;height:36px;border-radius:50%;background:#3B82F6;color:#fff;align-items:center;justify-content:center;font-weight:600;font-size:13px;">
+                                                            {{ initials($user->name) }}
+                                                        </span>
+                                                    </td>
+                                                    <td class="font-weight-bold">{{ $user->name }}</td>
+                                                    <td>{{ $user->email }}</td>
+                                                    <td>{{ $user->phone ?? '—' }}</td>
+                                                    <td>{{ formatDate($user->created_at, 'd M Y') }}</td>
+                                                    <td>
+                                                        <div class="d-flex justify-content-center">
+                                                            <a href='{{ route('user.edit', $user->id) }}'
+                                                                class="btn btn-sm btn-info btn-icon">
+                                                                <i class="fas fa-edit"></i> Edit
+                                                            </a>
 
-
-                                    </table>
-                                </div>
-                                <div class="float-right">
-                                    {{ $users->withQueryString()->links() }}
-                                </div>
+                                                            <form action="{{ route('user.destroy', $user->id) }}" method="POST" class="ml-2">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-sm btn-danger btn-icon confirm-delete"
+                                                                    data-title="Hapus pengguna?"
+                                                                    data-text="Pengguna '{{ $user->name }}' akan dihapus.">
+                                                                    <i class="fas fa-trash"></i> Hapus
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </table>
+                                    </div>
+                                    <div class="float-right">
+                                        {{ $users->withQueryString()->links() }}
+                                    </div>
+                                @else
+                                    <x-empty-state
+                                        icon="users"
+                                        title="Belum ada pengguna"
+                                        description="Tambahkan pengguna untuk mengakses panel admin."
+                                        :action-label="'Tambah Pengguna'"
+                                        :action-url="route('user.create')"
+                                    />
+                                @endif
                             </div>
                         </div>
                     </div>
