@@ -31,11 +31,13 @@
                     <i class="fas fa-box-open"></i><span>Produk</span>
                 </a>
             </li>
-            <li class="nav-item {{ request()->routeIs('user.*') ? 'active' : '' }}">
-                <a href="{{ route('user.index') }}" class="nav-link">
-                    <i class="fas fa-users"></i><span>Pengguna</span>
-                </a>
-            </li>
+            @can('viewAny', App\Models\User::class)
+                <li class="nav-item {{ request()->routeIs('user.*') ? 'active' : '' }}">
+                    <a href="{{ route('user.index') }}" class="nav-link">
+                        <i class="fas fa-users"></i><span>Pengguna</span>
+                    </a>
+                </li>
+            @endcan
 
             <li class="menu-header">Transaksi</li>
             <li class="nav-item {{ request()->routeIs('order.*') ? 'active' : '' }}">
