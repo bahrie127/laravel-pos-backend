@@ -24,7 +24,10 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('product/bulk', [ProductController::class, 'bulkDestroy'])->name('product.bulk-destroy');
     Route::resource('product', ProductController::class);
 
-    Route::resource('order', OrderController::class);
+    Route::get('order/export', [OrderController::class, 'export'])->name('order.export');
+    Route::get('order/{order}/receipt', [OrderController::class, 'receipt'])->name('order.receipt');
+    Route::get('order/{order}/invoice-pdf', [OrderController::class, 'invoicePdf'])->name('order.invoice-pdf');
+    Route::resource('order', OrderController::class)->only(['index', 'show', 'destroy']);
     Route::resource('categories', CategoryController::class);
 
     Route::prefix('profile')->name('profile.')->group(function () {
