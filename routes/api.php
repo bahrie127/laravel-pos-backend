@@ -1,41 +1,33 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\ReportController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+// Public
+Route::post('login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Authenticated
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::get('me', [AuthController::class, 'me']);
+
+    // Backward-compat: /api/user (legacy)
+    Route::get('user', [AuthController::class, 'me']);
+
+    Route::apiResource('products', ProductController::class)->only(['index', 'show', 'store']);
+    Route::apiResource('orders', OrderController::class)->only(['index', 'show', 'store']);
+    Route::get('orders/kasir/{kasir_id}', [OrderController::class, 'getByKasirId']);
+
+    Route::get('list-categories', [CategoryController::class, 'index']);
+    Route::apiResource('categories', CategoryController::class)->only(['index']);
+
+    Route::prefix('reports')->group(function () {
+        Route::get('summary', [ReportController::class, 'summary']);
+        Route::get('product-sales', [ReportController::class, 'productSales']);
+        Route::get('close-cashier', [ReportController::class, 'closeCashier']);
+    });
 });
-
-// post login
-Route::post('login', [\App\Http\Controllers\Api\AuthController::class, 'login']);
-
-// post logout
-Route::post('logout', [\App\Http\Controllers\Api\AuthController::class, 'logout'])->middleware('auth:sanctum');
-
-// api resource product
-Route::apiResource('products', \App\Http\Controllers\Api\ProductController::class)->middleware('auth:sanctum');
-
-// api resource order
-Route::apiResource('orders', \App\Http\Controllers\Api\OrderController::class)->middleware('auth:sanctum');
-// get order by kasir id
-Route::get('orders/kasir/{kasir_id}', [\App\Http\Controllers\Api\OrderController::class, 'getByKasirId'])->middleware('auth:sanctum');
-
-// get categories
-Route::get('list-categories', [\App\Http\Controllers\Api\CategoryController::class, 'index'])->middleware('auth:sanctum');
-
-// api resource report
-Route::get('/reports/summary', [App\Http\Controllers\Api\ReportController::class, 'summary'])->middleware('auth:sanctum');
-Route::get('/reports/product-sales', [App\Http\Controllers\Api\ReportController::class, 'productSales'])->middleware('auth:sanctum');
-Route::get('/reports/close-cashier', [App\Http\Controllers\Api\ReportController::class, 'closeCashier'])->middleware('auth:sanctum');

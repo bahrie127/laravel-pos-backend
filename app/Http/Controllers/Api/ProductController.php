@@ -3,85 +3,51 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\ApiProductStoreRequest;
+use App\Http\Resources\ProductResource;
+use App\Http\Responses\ApiResponse;
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        //all products
-        $products = \App\Models\Product::orderBy('id', 'desc')->get();
-        return response()->json([
-            'success' => true,
-            'message' => 'List Data Product',
-            'data' => $products
-        ], 200);
+        $products = Product::query()
+            ->with('category:id,name')
+            ->when($request->filled('q'), fn ($q) => $q->where('name', 'like', '%' . $request->q . '%'))
+            ->when($request->filled('category_id'), fn ($q) => $q->where('category_id', $request->category_id))
+            ->orderByDesc('id')
+            ->get();
+
+        return ApiResponse::success(
+            ProductResource::collection($products),
+            'List produk berhasil dimuat.'
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function show(Product $product)
     {
-        $request->validate([
-            'name' => 'required|min:3',
-            'price' => 'required|integer',
-            'stock' => 'required|integer',
-            'category_id' => 'required',
-            'image' => 'required|image|mimes:png,jpg,jpeg'
-        ]);
+        $product->load('category:id,name');
 
-        $filename = time() . '.' . $request->image->extension();
+        return ApiResponse::success(new ProductResource($product), 'Detail produk.');
+    }
+
+    public function store(ApiProductStoreRequest $request)
+    {
+        $data = $request->validated();
+
+        $filename = time() . '_' . $request->image->getClientOriginalName();
         $request->image->storeAs('public/products', $filename);
-        $category = \App\Models\Category::where('id', $request->category_id)->first();
-        $product = \App\Models\Product::create([
-            'name' => $request->name,
-            'price' => (int) $request->price,
-            'stock' => (int) $request->stock,
-            'category_id' => $request->category_id,
-            'category' => $category->name,
-            'image' => $filename,
-            'is_favorite' => $request->is_favorite
-        ]);
+        $data['image'] = $filename;
 
-        if ($product) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Product Created',
-                'data' => $product
-            ], 201);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Product Failed to Save',
-            ], 409);
-        }
-    }
+        $category = Category::find($data['category_id']);
+        $data['category'] = $category?->name;
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        $product = Product::create($data);
+        $product->load('category:id,name');
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return ApiResponse::success(new ProductResource($product), 'Produk berhasil ditambahkan.', 201);
     }
 }

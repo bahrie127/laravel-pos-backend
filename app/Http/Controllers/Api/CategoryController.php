@@ -3,19 +3,23 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Resources\CategoryResource;
+use App\Http\Responses\ApiResponse;
 use App\Models\Category;
 
 class CategoryController extends Controller
 {
-    //index
     public function index()
     {
-        $categories = Category::all();
-        return response()->json([
-            'status' => true,
-            'message' => 'List data categories',
-            'data' => $categories
-        ]);
+        $categories = Category::withCount('products')
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
+
+        return ApiResponse::success(
+            CategoryResource::collection($categories),
+            'List kategori berhasil dimuat.'
+        );
     }
 }
