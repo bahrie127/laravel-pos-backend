@@ -159,6 +159,11 @@ body {
     margin-top: 1rem;
 }
 
+/* Chart canvas safety — cegah tumbuh tak terbatas saat parent height:100% */
+.card-clean canvas {
+    max-height: 300px !important;
+}
+
 /* Empty state */
 .empty-state {
     text-align: center;

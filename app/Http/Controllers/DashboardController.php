@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -15,6 +15,8 @@ class DashboardController extends Controller
     {
         $today = today();
         $yesterday = $today->copy()->subDay();
+        $startOfWeek = $today->copy()->startOfWeek();
+        $startOfMonth = $today->copy()->startOfMonth();
 
         $revenueToday = (float) Order::whereDate('transaction_time', $today)->sum('total_price');
         $revenueYesterday = (float) Order::whereDate('transaction_time', $yesterday)->sum('total_price');
@@ -33,29 +35,17 @@ class DashboardController extends Controller
             'active_users' => User::count(),
         ];
 
-        // Sales trend last 7 days (fill missing days with 0)
-        $sevenDaysAgo = $today->copy()->subDays(6);
-        $rawTrend = Order::selectRaw('DATE(transaction_time) as date, SUM(total_price) as total, COUNT(*) as orders')
-            ->where('transaction_time', '>=', $sevenDaysAgo->copy()->startOfDay())
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get()
-            ->keyBy('date');
+        $quickStats = [
+            'revenue_week' => (float) Order::where('transaction_time', '>=', $startOfWeek)->sum('total_price'),
+            'orders_week' => Order::where('transaction_time', '>=', $startOfWeek)->count(),
+            'revenue_month' => (float) Order::where('transaction_time', '>=', $startOfMonth)->sum('total_price'),
+            'orders_month' => Order::where('transaction_time', '>=', $startOfMonth)->count(),
+            'avg_order_value' => (float) Order::avg('total_price'),
+            'total_orders_lifetime' => Order::count(),
+            'total_categories' => Category::count(),
+            'out_of_stock' => Product::where('stock', 0)->count(),
+        ];
 
-        $salesTrend = [];
-        for ($i = 0; $i < 7; $i++) {
-            $d = $sevenDaysAgo->copy()->addDays($i);
-            $key = $d->toDateString();
-            $row = $rawTrend->get($key);
-            $salesTrend[] = [
-                'date' => $key,
-                'label' => $d->translatedFormat('d M'),
-                'total' => $row ? (float) $row->total : 0,
-                'orders' => $row ? (int) $row->orders : 0,
-            ];
-        }
-
-        // Top 5 products
         $topProducts = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_sold'), DB::raw('SUM(total_price) as total_revenue'))
             ->with('product:id,name,price,image')
             ->groupBy('product_id')
@@ -80,7 +70,7 @@ class DashboardController extends Controller
 
         return view('pages.dashboard', compact(
             'stats',
-            'salesTrend',
+            'quickStats',
             'topProducts',
             'recentOrders',
             'lowStock',

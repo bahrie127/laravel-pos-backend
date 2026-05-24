@@ -70,14 +70,52 @@
                     </div>
                 </div>
 
-                {{-- Sales chart + Top products --}}
+                {{-- Quick stats + Top products --}}
                 <div class="row">
                     <div class="col-lg-8 col-md-12 col-12 col-sm-12">
                         <div class="card-clean">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h4 class="m-0">Tren Penjualan 7 Hari Terakhir</h4>
+                            <h4 class="mb-3">Statistik Singkat</h4>
+                            <div class="row no-gutters">
+                                <div class="col-6 col-md-3 px-2 py-2">
+                                    <div class="text-muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.04em;">Pendapatan Minggu Ini</div>
+                                    <div class="font-weight-bold" style="font-size:18px;">{{ rupiah($quickStats['revenue_week']) }}</div>
+                                    <div class="text-muted" style="font-size:12px;">{{ number_format($quickStats['orders_week'], 0, ',', '.') }} transaksi</div>
+                                </div>
+                                <div class="col-6 col-md-3 px-2 py-2 border-left">
+                                    <div class="text-muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.04em;">Pendapatan Bulan Ini</div>
+                                    <div class="font-weight-bold" style="font-size:18px;">{{ rupiah($quickStats['revenue_month']) }}</div>
+                                    <div class="text-muted" style="font-size:12px;">{{ number_format($quickStats['orders_month'], 0, ',', '.') }} transaksi</div>
+                                </div>
+                                <div class="col-6 col-md-3 px-2 py-2 border-left">
+                                    <div class="text-muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.04em;">Rata-rata Transaksi</div>
+                                    <div class="font-weight-bold" style="font-size:18px;">{{ rupiah($quickStats['avg_order_value']) }}</div>
+                                    <div class="text-muted" style="font-size:12px;">per pesanan</div>
+                                </div>
+                                <div class="col-6 col-md-3 px-2 py-2 border-left">
+                                    <div class="text-muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.04em;">Total Pesanan</div>
+                                    <div class="font-weight-bold" style="font-size:18px;">{{ number_format($quickStats['total_orders_lifetime'], 0, ',', '.') }}</div>
+                                    <div class="text-muted" style="font-size:12px;">sepanjang waktu</div>
+                                </div>
                             </div>
-                            <canvas id="salesChart" height="100"></canvas>
+
+                            <hr class="my-3">
+
+                            <div class="row no-gutters">
+                                <div class="col-6 col-md-6 px-2 d-flex align-items-center">
+                                    <i class="fas fa-tags text-primary mr-3" style="font-size:20px;"></i>
+                                    <div>
+                                        <div class="font-weight-bold">{{ number_format($quickStats['total_categories'], 0, ',', '.') }} Kategori</div>
+                                        <div class="text-muted" style="font-size:12px;">Terdaftar di katalog</div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-6 px-2 d-flex align-items-center">
+                                    <i class="fas fa-exclamation-circle {{ $quickStats['out_of_stock'] > 0 ? 'text-danger' : 'text-success' }} mr-3" style="font-size:20px;"></i>
+                                    <div>
+                                        <div class="font-weight-bold">{{ number_format($quickStats['out_of_stock'], 0, ',', '.') }} Produk Habis</div>
+                                        <div class="text-muted" style="font-size:12px;">Perlu restock</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -198,84 +236,39 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('library/chart.js/dist/Chart.min.js') }}"></script>
-    <script>
-        // Sales trend chart
-        (function () {
-            const ctx = document.getElementById('salesChart');
-            if (!ctx) return;
-            const trend = @json($salesTrend);
-            new Chart(ctx.getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: trend.map(t => t.label),
-                    datasets: [{
-                        label: 'Pendapatan',
-                        data: trend.map(t => t.total),
-                        borderColor: '#3B82F6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.3,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#3B82F6',
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    legend: { display: false },
-                    tooltips: {
-                        callbacks: {
-                            label: function (item) {
-                                return 'Rp ' + Number(item.yLabel).toLocaleString('id-ID');
-                            }
-                        }
+    @if ($paymentBreakdown->isNotEmpty())
+        <script src="{{ asset('library/chart.js/dist/Chart.min.js') }}"></script>
+        <script>
+            (function () {
+                const ctx = document.getElementById('paymentChart');
+                if (!ctx) return;
+                const payments = @json($paymentBreakdown);
+                const palette = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
+                new Chart(ctx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: payments.map(p => (p.payment_method || 'Lainnya').toUpperCase()),
+                        datasets: [{
+                            data: payments.map(p => Number(p.total)),
+                            backgroundColor: palette.slice(0, payments.length),
+                        }]
                     },
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true,
-                                callback: function (v) {
-                                    return 'Rp ' + Number(v).toLocaleString('id-ID');
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        legend: { position: 'bottom' },
+                        tooltips: {
+                            callbacks: {
+                                label: function (item, data) {
+                                    const label = data.labels[item.index];
+                                    const value = data.datasets[0].data[item.index];
+                                    return label + ': Rp ' + Number(value).toLocaleString('id-ID');
                                 }
                             }
-                        }]
-                    }
-                }
-            });
-        })();
-
-        // Payment method donut chart
-        (function () {
-            const ctx = document.getElementById('paymentChart');
-            if (!ctx) return;
-            const payments = @json($paymentBreakdown);
-            const palette = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
-            new Chart(ctx.getContext('2d'), {
-                type: 'doughnut',
-                data: {
-                    labels: payments.map(p => (p.payment_method || 'Lainnya').toUpperCase()),
-                    datasets: [{
-                        data: payments.map(p => Number(p.total)),
-                        backgroundColor: palette.slice(0, payments.length),
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    legend: { position: 'bottom' },
-                    tooltips: {
-                        callbacks: {
-                            label: function (item, data) {
-                                const label = data.labels[item.index];
-                                const value = data.datasets[0].data[item.index];
-                                return label + ': Rp ' + Number(value).toLocaleString('id-ID');
-                            }
                         }
                     }
-                }
-            });
-        })();
-    </script>
+                });
+            })();
+        </script>
+    @endif
 @endpush
