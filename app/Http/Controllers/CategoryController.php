@@ -2,56 +2,72 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    //index
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::paginate(10);
-        return view('pages.categories.index', compact('categories'));
+        $view = $request->get('view') === 'list' ? 'list' : 'grid';
+
+        $categories = Category::withCount('products')
+            ->when($request->filled('q'), fn ($q) => $q->where('name', 'like', '%' . $request->q . '%'))
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('pages.categories.index', compact('categories', 'view'));
     }
 
-    //create
     public function create()
     {
+        $this->authorize('create', Category::class);
+
         return view('pages.categories.create');
     }
 
-    //store
-    public function store(Request $request)
+    public function store(CategoryRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
+        $data = $request->validated();
+        $data['is_active'] = $request->boolean('is_active', true);
+        $data['color'] = $data['color'] ?? '#3B82F6';
+        $data['icon'] = $data['icon'] ?? 'tag';
 
-        Category::create($request->all());
-        return redirect()->route('categories.index')->with('success', 'Category created successfully');
+        Category::create($data);
+
+        return redirect()->route('categories.index')->with('success', 'Kategori berhasil ditambahkan.');
     }
 
-    //edit
     public function edit(Category $category)
     {
+        $this->authorize('update', $category);
+
         return view('pages.categories.edit', compact('category'));
     }
 
-    //update
-    public function update(Request $request, Category $category)
+    public function update(CategoryRequest $request, Category $category)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
+        $data = $request->validated();
+        $data['is_active'] = $request->boolean('is_active');
 
-        $category->update($request->all());
-        return redirect()->route('categories.index')->with('success', 'Category updated successfully');
+        $category->update($data);
+
+        return redirect()->route('categories.index')->with('success', 'Kategori berhasil diperbarui.');
     }
 
-    //destroy
     public function destroy(Category $category)
     {
+        $this->authorize('delete', $category);
+
+        if ($category->products()->exists()) {
+            return back()->with('error', "Kategori '{$category->name}' tidak bisa dihapus karena masih punya produk.");
+        }
+
         $category->delete();
-        return redirect()->route('categories.index')->with('success', 'Category deleted successfully');
+
+        return redirect()->route('categories.index')->with('success', 'Kategori berhasil dihapus.');
     }
 }
