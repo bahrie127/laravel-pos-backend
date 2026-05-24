@@ -22,47 +22,72 @@ body {
 .main-sidebar .sidebar-brand {
     background: #fff;
     border-bottom: 1px solid #e5e7eb;
+    padding: 16px 20px !important;
+    height: auto !important;
 }
 .main-sidebar .sidebar-brand a {
     color: var(--brand-primary) !important;
     font-weight: 700;
     display: flex !important;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     text-decoration: none;
+    justify-content: flex-start !important;
 }
 .main-sidebar .sidebar-brand img {
-    width: 28px; height: 28px;
+    width: 30px; height: 30px; flex-shrink: 0;
+}
+.main-sidebar .sidebar-brand-sm {
+    padding: 16px 0 !important;
+}
+.main-sidebar .sidebar-brand-sm a {
+    justify-content: center !important;
+}
+.main-sidebar .sidebar-menu {
+    padding: 8px 12px;
 }
 .main-sidebar .sidebar-menu li.menu-header {
     font-size: 11px;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: #9ca3af;
-    padding-left: 1.5rem;
-    margin-top: 1rem;
+    padding: 12px 12px 6px !important;
+    margin-top: 4px;
+}
+.main-sidebar .sidebar-menu li.nav-item {
+    padding: 0 !important;
+}
+.main-sidebar .sidebar-menu .nav-link {
+    border-radius: 8px;
+    margin: 2px 0;
+    padding: 10px 12px !important;
+    transition: all .15s;
+    display: flex !important;
+    align-items: center;
+}
+.main-sidebar .sidebar-menu .nav-link i {
+    width: 20px;
+    text-align: center;
+    margin-right: 10px;
+    font-size: 15px;
 }
 .main-sidebar .sidebar-menu li.active > a {
     background: var(--brand-primary-light) !important;
     color: var(--brand-primary) !important;
-    border-radius: 8px;
-    margin: 0 .5rem;
+    font-weight: 600;
 }
 .main-sidebar .sidebar-menu li.active > a i {
     color: var(--brand-primary) !important;
 }
-.main-sidebar .sidebar-menu .nav-link {
-    border-radius: 8px;
-    margin: 2px .5rem;
-    transition: all .15s;
-}
 .main-sidebar .sidebar-menu .nav-link:hover {
     background: var(--brand-gray-100);
+    text-decoration: none;
 }
 .sidebar-user-card {
-    padding: 1rem;
+    padding: 16px 20px;
     border-top: 1px solid #e5e7eb;
-    margin-top: 1rem;
+    margin-top: 16px;
 }
 .sidebar-user-card .avatar {
     width: 36px; height: 36px; border-radius: 50%;
