@@ -45,6 +45,30 @@
                     <i class="fas fa-receipt"></i><span>Pesanan</span>
                 </a>
             </li>
+
+            @can('view-reports')
+                <li class="menu-header">Laporan</li>
+                <li class="nav-item {{ request()->routeIs('reports.index') ? 'active' : '' }}">
+                    <a href="{{ route('reports.index') }}" class="nav-link">
+                        <i class="fas fa-th-large"></i><span>Ringkasan</span>
+                    </a>
+                </li>
+                <li class="nav-item {{ request()->routeIs('reports.summary') ? 'active' : '' }}">
+                    <a href="{{ route('reports.summary') }}" class="nav-link">
+                        <i class="fas fa-chart-bar"></i><span>Penjualan</span>
+                    </a>
+                </li>
+                <li class="nav-item {{ request()->routeIs('reports.product-sales') ? 'active' : '' }}">
+                    <a href="{{ route('reports.product-sales') }}" class="nav-link">
+                        <i class="fas fa-chart-pie"></i><span>Per Produk</span>
+                    </a>
+                </li>
+                <li class="nav-item {{ request()->routeIs('reports.close-cashier') ? 'active' : '' }}">
+                    <a href="{{ route('reports.close-cashier') }}" class="nav-link">
+                        <i class="fas fa-cash-register"></i><span>Tutup Kasir</span>
+                    </a>
+                </li>
+            @endcan
         </ul>
 
         @auth
