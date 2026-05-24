@@ -86,6 +86,22 @@ body {
     background: #fef2f2;
 }
 
+/* Section spacing — beri jarak antar row di dashboard / list page */
+.section-body > .row {
+    margin-bottom: 1.5rem;
+}
+.section-body > .row:last-child {
+    margin-bottom: 0;
+}
+.section-body > .row > [class*="col-"] {
+    margin-bottom: 1rem;
+}
+@media (min-width: 992px) {
+    .section-body > .row > [class*="col-lg-"] {
+        margin-bottom: 0;
+    }
+}
+
 /* Stat cards */
 .stat-card {
     background: #fff;
@@ -94,6 +110,7 @@ body {
     box-shadow: 0 1px 2px rgba(0,0,0,.04);
     border: 1px solid #e5e7eb;
     transition: box-shadow .15s;
+    height: 100%;
 }
 .stat-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.06); }
 .stat-card .stat-icon {
@@ -136,6 +153,10 @@ body {
     border-radius: 12px;
     padding: 1.25rem;
     box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    height: 100%;
+}
+.card-clean + .card-clean {
+    margin-top: 1rem;
 }
 
 /* Empty state */
