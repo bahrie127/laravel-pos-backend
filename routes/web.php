@@ -19,7 +19,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('home', [DashboardController::class, 'index'])->name('home');
 
     Route::resource('user', UserController::class);
+
+    Route::delete('product/bulk', [ProductController::class, 'bulkDestroy'])->name('product.bulk-destroy');
     Route::resource('product', ProductController::class);
+
     Route::resource('order', OrderController::class);
     Route::resource('categories', CategoryController::class);
 });
