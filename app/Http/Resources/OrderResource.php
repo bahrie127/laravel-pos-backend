@@ -22,6 +22,8 @@ class OrderResource extends JsonResource
             'status_label' => $this->statusLabel(),
             'subtotal' => (int) $this->subtotal,
             'discount' => (int) $this->discount,
+            'discount_amount' => (int) $this->discount_amount,
+            'promo_id' => $this->promo_id,
             'tax' => (int) $this->tax,
             'amount_paid' => (int) $this->amount_paid,
             'change_amount' => (int) $this->change_amount,

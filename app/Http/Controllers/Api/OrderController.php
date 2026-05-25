@@ -9,6 +9,7 @@ use App\Http\Responses\ApiResponse;
 use App\Models\CashSession;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Promo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -52,16 +53,33 @@ class OrderController extends Controller
             );
         }
 
-        $order = DB::transaction(function () use ($data, $items, $session) {
+        // Server-authoritative discount: if a promo_id is supplied, recompute
+        // the discount from the BE-stored promo so the client can't fake a
+        // bigger discount than the rules allow.
+        $promoId = $data['promo_id'] ?? null;
+        $subtotal = (int) ($data['subtotal'] ?? $data['total_price']);
+        $discountAmount = (int) ($data['discount_amount'] ?? 0);
+        if ($promoId) {
+            $promo = Promo::find($promoId);
+            if ($promo) {
+                $serverDiscount = $promo->computeDiscount($subtotal);
+                // Cap the client's claim at what the BE computes.
+                $discountAmount = min($discountAmount, $serverDiscount);
+            }
+        }
+
+        $order = DB::transaction(function () use ($data, $items, $session, $promoId, $discountAmount) {
             $order = Order::create([
                 'transaction_time' => $data['transaction_time'],
                 'kasir_id' => $data['kasir_id'],
                 'cash_session_id' => $session->id,
+                'promo_id' => $promoId,
                 'total_price' => $data['total_price'],
                 'total_item' => $data['total_item'],
                 'payment_method' => $data['payment_method'] ?? null,
                 'subtotal' => $data['subtotal'] ?? $data['total_price'],
                 'discount' => $data['discount'] ?? 0,
+                'discount_amount' => $discountAmount,
                 'tax' => $data['tax'] ?? 0,
                 'amount_paid' => $data['amount_paid'] ?? 0,
                 'change_amount' => $data['change_amount'] ?? 0,

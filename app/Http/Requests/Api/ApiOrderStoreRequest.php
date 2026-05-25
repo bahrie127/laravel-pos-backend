@@ -23,6 +23,8 @@ class ApiOrderStoreRequest extends FormRequest
             'notes' => ['nullable', 'string', 'max:500'],
             'subtotal' => ['nullable', 'numeric', 'min:0'],
             'discount' => ['nullable', 'numeric', 'min:0'],
+            'discount_amount' => ['nullable', 'integer', 'min:0'],
+            'promo_id' => ['nullable', 'integer', 'exists:promos,id'],
             'tax' => ['nullable', 'numeric', 'min:0'],
             'amount_paid' => ['nullable', 'numeric', 'min:0'],
             'change_amount' => ['nullable', 'numeric', 'min:0'],

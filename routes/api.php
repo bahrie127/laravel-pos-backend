@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CashSessionController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\PromoController;
 use App\Http\Controllers\Api\ReportController;
 use Illuminate\Support\Facades\Route;
 
@@ -42,5 +43,15 @@ Route::middleware('auth:sanctum')->group(function () {
             ->whereNumber('id');
         Route::post('{id}/close', [CashSessionController::class, 'close'])
             ->whereNumber('id');
+    });
+
+    Route::prefix('promos')->group(function () {
+        Route::get('/', [PromoController::class, 'index']);
+        Route::post('/', [PromoController::class, 'store']);
+        Route::post('apply', [PromoController::class, 'apply']);
+        Route::get('{promo}', [PromoController::class, 'show']);
+        Route::put('{promo}', [PromoController::class, 'update']);
+        Route::post('{promo}/toggle', [PromoController::class, 'toggle']);
+        Route::delete('{promo}', [PromoController::class, 'destroy']);
     });
 });
