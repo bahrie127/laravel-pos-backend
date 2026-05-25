@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ApiOrderStoreRequest;
 use App\Http\Resources\OrderResource;
 use App\Http\Responses\ApiResponse;
+use App\Models\CashSession;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
@@ -41,10 +42,21 @@ class OrderController extends Controller
         $items = $data['order_items'];
         unset($data['order_items']);
 
-        $order = DB::transaction(function () use ($data, $items) {
+        // Auto-attach the cashier's open shift. Coffeeshops should not
+        // accept new orders outside an open shift — block here.
+        $session = CashSession::currentFor((int) $data['kasir_id']);
+        if (! $session) {
+            return ApiResponse::error(
+                'Belum ada shift aktif untuk kasir ini. Buka kasir dulu.',
+                409
+            );
+        }
+
+        $order = DB::transaction(function () use ($data, $items, $session) {
             $order = Order::create([
                 'transaction_time' => $data['transaction_time'],
                 'kasir_id' => $data['kasir_id'],
+                'cash_session_id' => $session->id,
                 'total_price' => $data['total_price'],
                 'total_item' => $data['total_item'],
                 'payment_method' => $data['payment_method'] ?? null,

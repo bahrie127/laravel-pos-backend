@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CashSessionController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
@@ -29,5 +30,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('summary', [ReportController::class, 'summary']);
         Route::get('product-sales', [ReportController::class, 'productSales']);
         Route::get('close-cashier', [ReportController::class, 'closeCashier']);
+    });
+
+    Route::prefix('cash-sessions')->group(function () {
+        Route::get('/', [CashSessionController::class, 'index']);
+        Route::get('current', [CashSessionController::class, 'current']);
+        Route::post('open', [CashSessionController::class, 'open']);
+        Route::get('{id}', [CashSessionController::class, 'show'])
+            ->whereNumber('id');
+        Route::get('{id}/summary', [CashSessionController::class, 'summary'])
+            ->whereNumber('id');
+        Route::post('{id}/close', [CashSessionController::class, 'close'])
+            ->whereNumber('id');
     });
 });

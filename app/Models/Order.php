@@ -20,6 +20,7 @@ class Order extends Model
         'total_price',
         'total_item',
         'kasir_id',
+        'cash_session_id',
         'payment_method',
         'status',
         'subtotal',
@@ -86,6 +87,11 @@ class Order extends Model
     public function kasir()
     {
         return $this->belongsTo(User::class, 'kasir_id', 'id');
+    }
+
+    public function cashSession()
+    {
+        return $this->belongsTo(CashSession::class, 'cash_session_id', 'id');
     }
 
     public function orderItems()
