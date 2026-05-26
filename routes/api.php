@@ -12,10 +12,16 @@ use Illuminate\Support\Facades\Route;
 // Public
 Route::post('login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
+// Privacy policy — referenced from the Play Store listing + in-app Setting tile.
+Route::get('privacy', fn () => response()
+    ->view('legal.privacy')
+    ->header('Content-Type', 'text/html; charset=UTF-8'));
+
 // Authenticated
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('me', [AuthController::class, 'me']);
+    Route::delete('account', [AuthController::class, 'deleteAccount']);
 
     // Backward-compat: /api/user (legacy)
     Route::get('user', [AuthController::class, 'me']);

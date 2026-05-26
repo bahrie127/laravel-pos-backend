@@ -8,6 +8,7 @@ use App\Http\Resources\UserResource;
 use App\Http\Responses\ApiResponse;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -46,5 +47,42 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         return ApiResponse::success(new UserResource($request->user()));
+    }
+
+    /**
+     * Delete the authenticated user's account.
+     *
+     * Per Google Play account-deletion policy (July 2024), this endpoint must
+     * remove PII and effectively deactivate the account. We anonymize in-place
+     * so foreign keys (orders.kasir_id, cash_sessions.user_id) stay intact for
+     * audit history, then soft-delete the row. Tokens are revoked so the app
+     * is signed out immediately.
+     */
+    public function deleteAccount(Request $request)
+    {
+        $request->validate([
+            'confirmation' => 'required|string|in:HAPUS AKUN',
+        ]);
+
+        $user = $request->user();
+        if (! $user) {
+            return ApiResponse::error('Tidak terautentikasi.', 401);
+        }
+
+        DB::transaction(function () use ($user) {
+            $user->tokens()->delete();
+
+            $user->forceFill([
+                'name' => '[akun dihapus]',
+                'email' => 'deleted-'.$user->id.'@deleted.local',
+                'phone' => null,
+                'avatar' => null,
+                'is_active' => false,
+            ])->saveQuietly();
+
+            $user->delete();
+        });
+
+        return ApiResponse::success(null, 'Akun berhasil dihapus.');
     }
 }
