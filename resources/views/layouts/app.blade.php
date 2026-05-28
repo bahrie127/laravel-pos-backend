@@ -22,6 +22,18 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('css/components.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+    {{-- Anti-flash dark mode init: apply theme sebelum body render --}}
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('app-theme');
+                if (t === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
 </head>
 
 <body>
@@ -46,6 +58,42 @@
     <script src="{{ asset('js/stisla.js') }}"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Global toast helper — pakai di mana saja: AppToast('success', 'pesan')
+        window.AppToast = function (type, message, options) {
+            if (typeof Swal === 'undefined') return;
+            type = ['success', 'error', 'warning', 'info', 'question'].indexOf(type) >= 0 ? type : 'info';
+            Swal.fire(Object.assign({
+                toast: true,
+                position: 'top-end',
+                icon: type,
+                title: message,
+                showConfirmButton: false,
+                timer: 3500,
+                timerProgressBar: true,
+                customClass: { popup: 'app-toast-popup' },
+            }, options || {}));
+        };
+        // Legacy alias dari Phase 1
+        window.toast = function (message, type) { return window.AppToast(type || 'success', message); };
+
+        // Global confirm helper — return Promise<boolean>
+        window.AppConfirm = function (opts) {
+            opts = opts || {};
+            return Swal.fire({
+                title: opts.title || 'Apakah Anda yakin?',
+                text: opts.text || '',
+                icon: opts.icon || 'warning',
+                showCancelButton: true,
+                confirmButtonColor: opts.confirmColor || '#EF4444',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: opts.confirmText || 'Ya, lanjutkan',
+                cancelButtonText: opts.cancelText || 'Batal',
+                reverseButtons: true,
+            }).then(function (r) { return r.isConfirmed; });
+        };
+    </script>
 
     @stack('scripts')
 

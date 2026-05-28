@@ -31,6 +31,11 @@
                     <i class="fas fa-box-open"></i><span>Produk</span>
                 </a>
             </li>
+            <li class="nav-item {{ request()->routeIs('promo.*') ? 'active' : '' }}">
+                <a href="{{ route('promo.index') }}" class="nav-link">
+                    <i class="fas fa-percent"></i><span>Promo</span>
+                </a>
+            </li>
             @can('viewAny', App\Models\User::class)
                 <li class="nav-item {{ request()->routeIs('user.*') ? 'active' : '' }}">
                     <a href="{{ route('user.index') }}" class="nav-link">
@@ -45,17 +50,27 @@
                     <i class="fas fa-receipt"></i><span>Pesanan</span>
                 </a>
             </li>
+            <li class="nav-item {{ request()->routeIs('cash-session.*') ? 'active' : '' }}">
+                <a href="{{ route('cash-session.index') }}" class="nav-link">
+                    <i class="fas fa-cash-register"></i><span>Cash Sessions</span>
+                </a>
+            </li>
 
             @can('view-reports')
                 <li class="menu-header">Laporan</li>
                 <li class="nav-item {{ request()->routeIs('reports.index') ? 'active' : '' }}">
                     <a href="{{ route('reports.index') }}" class="nav-link">
-                        <i class="fas fa-th-large"></i><span>Ringkasan</span>
+                        <i class="fas fa-th-large"></i><span>Semua Laporan</span>
+                    </a>
+                </li>
+                <li class="nav-item {{ request()->routeIs('reports.sales-analytics') ? 'active' : '' }}">
+                    <a href="{{ route('reports.sales-analytics') }}" class="nav-link">
+                        <i class="fas fa-chart-line"></i><span>Sales Analytics</span>
                     </a>
                 </li>
                 <li class="nav-item {{ request()->routeIs('reports.summary') ? 'active' : '' }}">
                     <a href="{{ route('reports.summary') }}" class="nav-link">
-                        <i class="fas fa-chart-bar"></i><span>Penjualan</span>
+                        <i class="fas fa-chart-bar"></i><span>Ringkasan</span>
                     </a>
                 </li>
                 <li class="nav-item {{ request()->routeIs('reports.product-sales') ? 'active' : '' }}">
@@ -63,31 +78,23 @@
                         <i class="fas fa-chart-pie"></i><span>Per Produk</span>
                     </a>
                 </li>
+                <li class="nav-item {{ request()->routeIs('reports.inventory') ? 'active' : '' }}">
+                    <a href="{{ route('reports.inventory') }}" class="nav-link">
+                        <i class="fas fa-warehouse"></i><span>Stok</span>
+                    </a>
+                </li>
                 <li class="nav-item {{ request()->routeIs('reports.close-cashier') ? 'active' : '' }}">
                     <a href="{{ route('reports.close-cashier') }}" class="nav-link">
-                        <i class="fas fa-cash-register"></i><span>Tutup Kasir</span>
+                        <i class="fas fa-money-check-alt"></i><span>Tutup Kasir</span>
+                    </a>
+                </li>
+                <li class="nav-item {{ request()->routeIs('reports.promo-usage') ? 'active' : '' }}">
+                    <a href="{{ route('reports.promo-usage') }}" class="nav-link">
+                        <i class="fas fa-tags"></i><span>Pemakaian Promo</span>
                     </a>
                 </li>
             @endcan
         </ul>
 
-        @auth
-            <div class="sidebar-user-card">
-                <a href="{{ route('profile.show') }}" class="d-flex align-items-center mb-2 text-reset text-decoration-none">
-                    <img src="{{ auth()->user()->avatar_url }}" alt=""
-                        style="width:36px;height:36px;border-radius:50%;object-fit:cover;margin-right:8px;">
-                    <div class="flex-grow-1" style="min-width:0;">
-                        <div class="font-weight-bold text-truncate" style="font-size:13px;">{{ auth()->user()->name }}</div>
-                        <div class="text-muted text-truncate" style="font-size:11px;">{{ auth()->user()->email }}</div>
-                    </div>
-                </a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="sidebar-logout-btn">
-                        <i class="fas fa-sign-out-alt mr-1"></i> Logout
-                    </button>
-                </form>
-            </div>
-        @endauth
     </aside>
 </div>

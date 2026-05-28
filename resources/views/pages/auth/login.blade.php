@@ -69,6 +69,10 @@
 
                 <div class="text-center text-muted mt-4" style="font-size:12px;">
                     &copy; {{ date('Y') }} {{ config('app.name') }}
+                    <span class="mx-1">&middot;</span>
+                    <a href="{{ route('privacy') }}" target="_blank" rel="noopener" class="text-muted">
+                        Kebijakan Privasi
+                    </a>
                 </div>
             </div>
         </div>

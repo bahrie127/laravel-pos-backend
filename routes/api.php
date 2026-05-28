@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PromoController;
+use App\Http\Controllers\Api\RefundController;
 use App\Http\Controllers\Api\ReportController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,12 +27,22 @@ Route::middleware('auth:sanctum')->group(function () {
     // Backward-compat: /api/user (legacy)
     Route::get('user', [AuthController::class, 'me']);
 
-    Route::apiResource('products', ProductController::class)->only(['index', 'show', 'store']);
+    Route::apiResource('products', ProductController::class)
+        ->only(['index', 'show', 'store', 'update']);
+    // Multipart updates from mobile clients can't use PUT cleanly, so we
+    // accept POST + _method=PUT on the same path. apiResource already
+    // exposes the canonical PUT for completeness.
+    Route::post('products/{product}', [ProductController::class, 'update'])
+        ->whereNumber('product');
     Route::apiResource('orders', OrderController::class)->only(['index', 'show', 'store']);
     Route::get('orders/kasir/{kasir_id}', [OrderController::class, 'getByKasirId']);
+    Route::post('orders/{order}/refund', [RefundController::class, 'store'])
+        ->whereNumber('order');
 
     Route::get('list-categories', [CategoryController::class, 'index']);
-    Route::apiResource('categories', CategoryController::class)->only(['index']);
+    Route::apiResource('categories', CategoryController::class)
+        ->only(['index'])
+        ->names(['index' => 'api.categories.index']);
 
     Route::prefix('reports')->group(function () {
         Route::get('summary', [ReportController::class, 'summary']);

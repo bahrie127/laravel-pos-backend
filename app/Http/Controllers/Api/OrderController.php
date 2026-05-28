@@ -9,6 +9,7 @@ use App\Http\Responses\ApiResponse;
 use App\Models\CashSession;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
 use App\Models\Promo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -94,6 +95,15 @@ class OrderController extends Controller
                     'quantity' => $item['quantity'],
                     'total_price' => $item['total_price'],
                 ]);
+
+                // V1 stock decrement: mirror the FE-side decrement so the
+                // catalog reflects sales. We don't block on negative stock
+                // (race conditions are surfaced in reports rather than
+                // failing transactions for the cashier).
+                if (! empty($item['product_id']) && ($item['quantity'] ?? 0) > 0) {
+                    Product::where('id', $item['product_id'])
+                        ->decrement('stock', (int) $item['quantity']);
+                }
             }
 
             return $order;

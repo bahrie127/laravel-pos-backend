@@ -29,9 +29,9 @@
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row align-items-start">
                     <div class="col-lg-8 col-12">
-                        <div class="card-clean">
+                        <div class="card-clean" style="height:auto;">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <h4 class="m-0">Item Pesanan</h4>
                                 <span class="badge {{ $order->statusBadgeClass() }}">{{ $order->statusLabel() }}</span>
@@ -69,7 +69,7 @@
                         </div>
 
                         @if ($order->notes)
-                            <div class="card-clean">
+                            <div class="card-clean mt-3" style="height:auto;">
                                 <h5 class="mb-2">Catatan</h5>
                                 <p class="m-0 text-muted">{{ $order->notes }}</p>
                             </div>
@@ -77,7 +77,7 @@
                     </div>
 
                     <div class="col-lg-4 col-12">
-                        <div class="card-clean mb-3">
+                        <div class="card-clean mb-3" style="height:auto;">
                             <h4 class="mb-3">Ringkasan</h4>
                             <div class="d-flex justify-content-between py-2">
                                 <span class="text-muted">Subtotal</span>
@@ -118,7 +118,7 @@
                             @endif
                         </div>
 
-                        <div class="card-clean">
+                        <div class="card-clean" style="height:auto;">
                             <h4 class="mb-3">Informasi</h4>
                             <div class="mb-2">
                                 <div class="text-muted" style="font-size:12px;">Waktu Transaksi</div>

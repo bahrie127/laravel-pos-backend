@@ -11,11 +11,37 @@
     --brand-gray-100: #F3F4F6;
     --brand-gray-500: #6B7280;
     --brand-gray-900: #111827;
+
+    /* Surface tokens — diganti di dark mode */
+    --app-bg: #F9FAFB;
+    --app-surface: #FFFFFF;
+    --app-surface-elevated: #FFFFFF;
+    --app-border: #E5E7EB;
+    --app-text: #111827;
+    --app-text-muted: #6B7280;
+    --app-input-bg: #FFFFFF;
+    --app-input-border: #CED4DA;
+    --app-table-stripe: #F9FAFB;
+    --app-table-hover: #F3F4F6;
+}
+
+html[data-theme="dark"] {
+    --app-bg: #0F172A;
+    --app-surface: #1E293B;
+    --app-surface-elevated: #273548;
+    --app-border: #334155;
+    --app-text: #F1F5F9;
+    --app-text-muted: #94A3B8;
+    --app-input-bg: #1E293B;
+    --app-input-border: #334155;
+    --app-table-stripe: #1A2536;
+    --app-table-hover: #273548;
 }
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-    background: var(--brand-gray-50);
+    background: var(--app-bg) !important;
+    color: var(--app-text);
 }
 
 /* Sidebar */
@@ -127,40 +153,51 @@ body {
     }
 }
 
-/* Stat cards */
+/* Stat cards — horizontal layout (icon left, content right) */
 .stat-card {
     background: #fff;
     border-radius: 12px;
-    padding: 1.25rem;
+    padding: 14px 18px;
     box-shadow: 0 1px 2px rgba(0,0,0,.04);
     border: 1px solid #e5e7eb;
     transition: box-shadow .15s;
     height: 100%;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 14px;
+    align-items: center;
 }
 .stat-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.06); }
 .stat-card .stat-icon {
-    width: 48px; height: 48px; border-radius: 10px;
+    grid-row: 1 / -1;
+    grid-column: 1;
+    align-self: center;
+    width: 44px; height: 44px; border-radius: 10px;
     display: inline-flex; align-items: center; justify-content: center;
-    margin-bottom: 12px;
-    font-size: 22px;
+    margin-bottom: 0;
+    font-size: 20px;
 }
+.stat-card > *:not(.stat-icon) { grid-column: 2; min-width: 0; }
 .stat-card .stat-label {
-    font-size: 12px;
+    font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--brand-gray-500);
     font-weight: 500;
+    margin: 0;
 }
 .stat-card .stat-value {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 700;
     color: var(--brand-gray-900);
-    margin: 4px 0;
+    margin: 2px 0 0;
     line-height: 1.2;
+    word-break: break-word;
 }
 .stat-card .stat-delta {
     font-size: 12px;
     font-weight: 500;
+    margin-top: 2px;
 }
 .stat-card .stat-delta.up { color: var(--brand-success); }
 .stat-card .stat-delta.down { color: var(--brand-danger); }
@@ -187,6 +224,226 @@ body {
 /* Chart canvas safety — cegah tumbuh tak terbatas saat parent height:100% */
 .card-clean canvas {
     max-height: 300px !important;
+}
+
+/* Custom chevron for native <select> — biar gak mepet sama edge kanan */
+select.form-control:not([multiple]):not([size]),
+select.form-control-sm:not([multiple]):not([size]) {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px;
+    padding-right: 34px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+html[data-theme="dark"] select.form-control:not([multiple]):not([size]),
+html[data-theme="dark"] select.form-control-sm:not([multiple]):not([size]) {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+/* Dropdown caret (Bootstrap dropdown-toggle) — beri spacing dari teks */
+.btn.dropdown-toggle::after {
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+/* Reports filter bar (advanced) — chip periode + control row */
+.reports-filter-bar .chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+.reports-filter-bar .chip-label {
+    font-size: 12px;
+    color: var(--brand-gray-500);
+    margin-right: 4px;
+    font-weight: 500;
+}
+.reports-filter-bar .chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    color: var(--brand-gray-700, #374151);
+    transition: all .15s;
+    cursor: pointer;
+    line-height: 1.2;
+}
+.reports-filter-bar .chip:hover {
+    border-color: var(--brand-primary);
+    color: var(--brand-primary);
+}
+.reports-filter-bar .chip.active {
+    background: var(--brand-primary);
+    border-color: var(--brand-primary);
+    color: #fff;
+}
+.reports-filter-bar .controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 12px;
+}
+.reports-filter-bar .rf-field { display: flex; flex-direction: column; min-width: 170px; }
+.reports-filter-bar .rf-field label {
+    font-size: 12px;
+    color: var(--brand-gray-500);
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+.reports-filter-bar .rf-field .form-control { height: 38px; }
+.reports-filter-bar .rf-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+    align-items: end;
+}
+.reports-filter-bar .rf-actions .btn { height: 38px; }
+.reports-filter-bar .rf-meta {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--brand-gray-500);
+}
+html[data-theme="dark"] .reports-filter-bar .chip {
+    background: var(--app-surface);
+    border-color: var(--app-border);
+    color: var(--app-text);
+}
+html[data-theme="dark"] .reports-filter-bar .chip-label,
+html[data-theme="dark"] .reports-filter-bar .rf-field label,
+html[data-theme="dark"] .reports-filter-bar .rf-meta { color: var(--app-text-muted); }
+
+/* Reports filter bar — compact horizontal */
+.reports-filter {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    margin-bottom: 1rem;
+}
+.reports-filter .rf-field { margin: 0; display: flex; flex-direction: column; }
+.reports-filter .rf-field label {
+    font-size: 12px;
+    color: var(--brand-gray-500);
+    margin-bottom: 4px;
+}
+.reports-filter .rf-field input[type="date"],
+.reports-filter .rf-field select {
+    height: 38px;
+    min-width: 160px;
+}
+html[data-theme="dark"] .reports-filter {
+    background: var(--app-surface) !important;
+    border-color: var(--app-border) !important;
+}
+html[data-theme="dark"] .reports-filter .rf-field label { color: var(--app-text-muted); }
+
+/* Category card (kategori grid) */
+.category-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow .15s, transform .15s;
+}
+.category-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,.07);
+    transform: translateY(-1px);
+}
+.category-card .cat-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+.category-card .cat-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--brand-gray-900);
+    margin-bottom: 2px;
+    line-height: 1.3;
+    word-break: break-word;
+}
+.category-card .cat-meta {
+    font-size: 12px;
+    color: var(--brand-gray-500);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.category-card .cat-desc {
+    font-size: 12px;
+    color: var(--brand-gray-500);
+    margin-top: 8px;
+    line-height: 1.4;
+}
+.category-card .cat-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: auto;
+    padding-top: 12px;
+}
+.category-card .cat-actions .btn {
+    flex: 1;
+    padding: 6px 8px;
+    font-size: 12px;
+    border-radius: 6px;
+}
+
+/* View toggle (segmented control) */
+.view-toggle {
+    display: inline-flex;
+    background: #f3f4f6;
+    border-radius: 8px;
+    padding: 3px;
+    gap: 2px;
+}
+.view-toggle .btn {
+    border: 0;
+    background: transparent;
+    color: var(--brand-gray-500);
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 6px;
+    box-shadow: none;
+}
+.view-toggle .btn:hover { color: var(--brand-gray-900); }
+.view-toggle .btn.active {
+    background: #fff;
+    color: var(--brand-primary);
+    box-shadow: 0 1px 2px rgba(0,0,0,.05);
+}
+.view-toggle .btn i { font-size: 12px; }
+
+html[data-theme="dark"] .category-card {
+    background: var(--app-surface) !important;
+    border-color: var(--app-border) !important;
+}
+html[data-theme="dark"] .category-card .cat-name { color: var(--app-text) !important; }
+html[data-theme="dark"] .category-card .cat-meta,
+html[data-theme="dark"] .category-card .cat-desc { color: var(--app-text-muted) !important; }
+html[data-theme="dark"] .view-toggle { background: rgba(255,255,255,.05); }
+html[data-theme="dark"] .view-toggle .btn { color: var(--app-text-muted); }
+html[data-theme="dark"] .view-toggle .btn.active {
+    background: var(--app-surface);
+    color: var(--brand-primary);
 }
 
 /* Empty state */
@@ -266,4 +523,347 @@ body {
     background: transparent; border: 0;
     color: var(--brand-gray-500); cursor: pointer;
     padding: 4px;
+}
+
+/* Toast styling */
+.app-toast-popup {
+    border-radius: 10px !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,.12) !important;
+    border-left: 4px solid var(--brand-primary);
+    font-family: 'Inter', sans-serif !important;
+}
+.swal2-icon.swal2-success { border-color: var(--brand-success) !important; color: var(--brand-success) !important; }
+.swal2-icon.swal2-error   { border-color: var(--brand-danger)  !important; color: var(--brand-danger)  !important; }
+.swal2-icon.swal2-warning { border-color: var(--brand-warning) !important; color: var(--brand-warning) !important; }
+.swal2-icon.swal2-info    { border-color: var(--brand-primary) !important; color: var(--brand-primary) !important; }
+
+/* Page header block */
+.page-header-block { padding-bottom: .25rem; }
+
+/* Custom switch — pakai style Stisla bawaan, hanya override warna ke brand */
+.custom-switch-input:checked ~ .custom-switch-indicator { background: var(--brand-primary) !important; }
+.custom-switch-input:focus ~ .custom-switch-indicator   { border-color: var(--brand-primary) !important; }
+
+/* =========================================================
+   Dark mode — override Stisla light surfaces
+   Hanya aktif saat html[data-theme="dark"]
+   ========================================================= */
+
+html[data-theme="dark"] .main-content {
+    background: var(--app-bg) !important;
+    color: var(--app-text);
+}
+
+/* Sidebar */
+html[data-theme="dark"] .main-sidebar,
+html[data-theme="dark"] .main-sidebar #sidebar-wrapper {
+    background: var(--app-surface) !important;
+    border-right: 1px solid var(--app-border) !important;
+}
+html[data-theme="dark"] .main-sidebar .sidebar-brand {
+    background: var(--app-surface) !important;
+    border-bottom-color: var(--app-border) !important;
+}
+html[data-theme="dark"] .main-sidebar .sidebar-brand a,
+html[data-theme="dark"] .main-sidebar .sidebar-brand a span {
+    color: var(--app-text) !important;
+}
+html[data-theme="dark"] .main-sidebar .sidebar-menu .nav-link {
+    color: var(--app-text-muted) !important;
+}
+html[data-theme="dark"] .main-sidebar .sidebar-menu .nav-link:hover {
+    background: var(--app-table-hover) !important;
+    color: var(--app-text) !important;
+}
+html[data-theme="dark"] .main-sidebar .sidebar-menu li.active > a {
+    background: rgba(59, 130, 246, .15) !important;
+    color: var(--brand-primary) !important;
+}
+html[data-theme="dark"] .main-sidebar .sidebar-menu li.menu-header {
+    color: var(--app-text-muted) !important;
+}
+html[data-theme="dark"] .sidebar-user-card { border-top-color: var(--app-border) !important; }
+
+/* Header / navbar */
+html[data-theme="dark"] .main-navbar,
+html[data-theme="dark"] .navbar-bg {
+    background: var(--app-surface) !important;
+    border-bottom: 1px solid var(--app-border) !important;
+}
+html[data-theme="dark"] .main-navbar .nav-link,
+html[data-theme="dark"] .main-navbar .nav-link-user {
+    color: var(--app-text) !important;
+}
+html[data-theme="dark"] .main-navbar .dropdown-menu {
+    background: var(--app-surface-elevated) !important;
+    border-color: var(--app-border) !important;
+}
+html[data-theme="dark"] .main-navbar .dropdown-item {
+    color: var(--app-text) !important;
+}
+html[data-theme="dark"] .main-navbar .dropdown-item:hover {
+    background: var(--app-table-hover) !important;
+}
+html[data-theme="dark"] .main-navbar .dropdown-title {
+    color: var(--app-text-muted) !important;
+    border-bottom-color: var(--app-border) !important;
+}
+
+/* Card / surfaces */
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .card-clean,
+html[data-theme="dark"] .stat-card {
+    background: var(--app-surface) !important;
+    border-color: var(--app-border) !important;
+    color: var(--app-text);
+}
+html[data-theme="dark"] .card-header,
+html[data-theme="dark"] .card-footer {
+    background: var(--app-surface) !important;
+    border-color: var(--app-border) !important;
+    color: var(--app-text);
+}
+html[data-theme="dark"] .stat-card .stat-value { color: var(--app-text) !important; }
+html[data-theme="dark"] .stat-card .stat-label { color: var(--app-text-muted) !important; }
+html[data-theme="dark"] .page-title { color: var(--app-text) !important; }
+html[data-theme="dark"] .text-muted,
+html[data-theme="dark"] .text-secondary { color: var(--app-text-muted) !important; }
+
+/* Table */
+html[data-theme="dark"] .table {
+    color: var(--app-text) !important;
+}
+html[data-theme="dark"] .table thead th {
+    background: var(--app-surface-elevated) !important;
+    color: var(--app-text-muted) !important;
+    border-color: var(--app-border) !important;
+}
+html[data-theme="dark"] .table td,
+html[data-theme="dark"] .table th {
+    border-color: var(--app-border) !important;
+}
+html[data-theme="dark"] .table-hover tbody tr:hover {
+    background: var(--app-table-hover) !important;
+}
+html[data-theme="dark"] .table-striped tbody tr:nth-of-type(odd) {
+    background: var(--app-table-stripe) !important;
+}
+
+/* Form */
+html[data-theme="dark"] .form-control,
+html[data-theme="dark"] .form-select,
+html[data-theme="dark"] select.form-control,
+html[data-theme="dark"] textarea.form-control {
+    background: var(--app-input-bg) !important;
+    border-color: var(--app-input-border) !important;
+    color: var(--app-text) !important;
+}
+html[data-theme="dark"] .form-control::placeholder { color: var(--app-text-muted); }
+html[data-theme="dark"] .form-control:disabled,
+html[data-theme="dark"] .form-control[readonly] {
+    background: var(--app-table-stripe) !important;
+}
+html[data-theme="dark"] .input-group-text {
+    background: var(--app-surface-elevated) !important;
+    border-color: var(--app-input-border) !important;
+    color: var(--app-text-muted) !important;
+}
+html[data-theme="dark"] label,
+html[data-theme="dark"] .form-label { color: var(--app-text); }
+
+/* Modal */
+html[data-theme="dark"] .modal-content {
+    background: var(--app-surface) !important;
+    color: var(--app-text);
+}
+html[data-theme="dark"] .modal-header,
+html[data-theme="dark"] .modal-footer {
+    border-color: var(--app-border) !important;
+}
+html[data-theme="dark"] .close { color: var(--app-text) !important; opacity: .8; }
+
+/* Buttons — keep brand colors, just adjust ghosts */
+html[data-theme="dark"] .btn-light,
+html[data-theme="dark"] .btn-default {
+    background: var(--app-surface-elevated) !important;
+    border-color: var(--app-border) !important;
+    color: var(--app-text) !important;
+}
+html[data-theme="dark"] .btn-light:hover {
+    background: var(--app-table-hover) !important;
+}
+
+/* Pagination */
+html[data-theme="dark"] .page-link {
+    background: var(--app-surface) !important;
+    border-color: var(--app-border) !important;
+    color: var(--app-text) !important;
+}
+html[data-theme="dark"] .page-item.active .page-link {
+    background: var(--brand-primary) !important;
+    border-color: var(--brand-primary) !important;
+    color: #fff !important;
+}
+html[data-theme="dark"] .page-item.disabled .page-link {
+    background: var(--app-surface) !important;
+    color: var(--app-text-muted) !important;
+}
+
+/* Badge soft — perlu kontras lebih tinggi di dark */
+html[data-theme="dark"] .badge-soft-success  { background: rgba(16,185,129,.15);  color: #6EE7B7; }
+html[data-theme="dark"] .badge-soft-warning  { background: rgba(245,158,11,.15);  color: #FCD34D; }
+html[data-theme="dark"] .badge-soft-danger   { background: rgba(239,68,68,.15);   color: #FCA5A5; }
+html[data-theme="dark"] .badge-soft-info     { background: rgba(99,102,241,.15);  color: #A5B4FC; }
+html[data-theme="dark"] .badge-soft-primary  { background: rgba(59,130,246,.15);  color: #93C5FD; }
+html[data-theme="dark"] .badge-soft-secondary{ background: rgba(148,163,184,.15); color: #CBD5E1; }
+
+/* Empty state */
+html[data-theme="dark"] .empty-state .empty-icon {
+    background: var(--app-table-hover);
+    color: var(--app-text-muted);
+}
+html[data-theme="dark"] .empty-state .empty-title { color: var(--app-text); }
+html[data-theme="dark"] .empty-state .empty-description { color: var(--app-text-muted); }
+
+/* Dropdown shared */
+html[data-theme="dark"] .dropdown-menu {
+    background: var(--app-surface-elevated) !important;
+    border-color: var(--app-border) !important;
+    color: var(--app-text);
+}
+html[data-theme="dark"] .dropdown-item { color: var(--app-text) !important; }
+html[data-theme="dark"] .dropdown-item:hover,
+html[data-theme="dark"] .dropdown-item:focus {
+    background: var(--app-table-hover) !important;
+    color: var(--app-text) !important;
+}
+html[data-theme="dark"] .dropdown-divider { border-top-color: var(--app-border) !important; }
+
+/* Section / hr */
+html[data-theme="dark"] hr { border-top-color: var(--app-border) !important; }
+
+/* Login split — dark variant */
+html[data-theme="dark"] .login-form-side { background: var(--app-surface) !important; }
+html[data-theme="dark"] .login-title { color: var(--app-text) !important; }
+html[data-theme="dark"] .login-subtitle { color: var(--app-text-muted) !important; }
+
+/* SweetAlert dialog */
+html[data-theme="dark"] .swal2-popup {
+    background: var(--app-surface) !important;
+    color: var(--app-text) !important;
+}
+html[data-theme="dark"] .swal2-title,
+html[data-theme="dark"] .swal2-html-container { color: var(--app-text) !important; }
+
+/* =========================================================
+   Mobile responsive polish
+   ========================================================= */
+
+@media (max-width: 575.98px) {
+    /* Page header — actions full width di mobile */
+    .page-header-block { gap: .75rem !important; }
+    .page-header-block .btn { padding: .5rem .9rem; }
+
+    /* Filter bar — button group full width */
+    .card-clean form .form-row .col-md-3 .btn { width: 100%; }
+
+    /* Stat card — kompak di mobile */
+    .stat-card { padding: 1rem; }
+    .stat-card .stat-icon { width: 40px; height: 40px; font-size: 18px; }
+    .stat-card .stat-value { font-size: 20px; }
+
+    /* Tabel — padding cell sedikit lebih lega untuk touch */
+    .table td, .table th { padding: .75rem .5rem; }
+
+    /* Sidebar user card — sembunyikan di mobile (sudah di drawer) */
+    .sidebar-user-card { padding: 12px 16px; }
+}
+
+/* Stick page header + filter bar di mobile saat scroll */
+@media (max-width: 767.98px) {
+    .page-header-block.sticky-mobile {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: var(--app-bg);
+        padding-top: .5rem;
+        padding-bottom: .5rem;
+        margin: 0 -1rem 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+/* Opt-in: tabel card-view di mobile.
+   Tambahkan class .table-mobile-stack ke <table> dan
+   atribut data-label="Header" di tiap <td>. */
+@media (max-width: 575.98px) {
+    .table-mobile-stack { border: 0; }
+    .table-mobile-stack thead { display: none; }
+    .table-mobile-stack tr {
+        display: block;
+        background: var(--app-surface);
+        border: 1px solid var(--app-border);
+        border-radius: 10px;
+        margin-bottom: .75rem;
+        padding: .5rem .75rem;
+    }
+    .table-mobile-stack td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 0;
+        border-bottom: 1px dashed var(--app-border);
+        padding: .6rem 0;
+        text-align: right;
+    }
+    .table-mobile-stack td:last-child { border-bottom: 0; }
+    .table-mobile-stack td::before {
+        content: attr(data-label);
+        font-weight: 500;
+        color: var(--app-text-muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+        margin-right: 1rem;
+        text-align: left;
+        flex-shrink: 0;
+    }
+}
+
+/* Sidebar drawer transition smoother di mobile */
+@media (max-width: 1024px) {
+    .main-sidebar {
+        transition: transform .25s ease-out, box-shadow .25s ease-out !important;
+    }
+    body.sidebar-show .main-sidebar {
+        box-shadow: 0 10px 30px rgba(0,0,0,.2);
+    }
+
+    /* Backdrop saat sidebar terbuka */
+    body.sidebar-show::before {
+        content: '';
+        position: fixed; inset: 0;
+        background: rgba(15,23,42,.5);
+        z-index: 879;
+        animation: fadeInBackdrop .2s ease-out;
+    }
+    @keyframes fadeInBackdrop {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+}
+
+/* Button group action di tabel — touch friendly */
+@media (max-width: 767.98px) {
+    .table .btn-action,
+    .table .btn-icon {
+        min-width: 36px; min-height: 36px;
+    }
+}
+
+/* Active shift indicator dot — used in header widget */
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .55; transform: scale(.85); }
 }

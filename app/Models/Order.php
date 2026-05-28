@@ -30,6 +30,11 @@ class Order extends Model
         'change_amount',
         'customer_name',
         'notes',
+        'refunded_at',
+        'refund_reason',
+        'refund_note',
+        'refund_amount',
+        'refunded_by_user_id',
     ];
 
     protected $casts = [
@@ -40,6 +45,8 @@ class Order extends Model
         'tax' => 'decimal:2',
         'amount_paid' => 'decimal:2',
         'change_amount' => 'decimal:2',
+        'refunded_at' => 'datetime',
+        'refund_amount' => 'decimal:2',
     ];
 
     protected static function booted(): void

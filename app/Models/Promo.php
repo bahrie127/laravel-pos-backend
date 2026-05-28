@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 class Promo extends Model
@@ -90,5 +91,29 @@ class Promo extends Model
     public function scopeByCode(Builder $query, string $code): Builder
     {
         return $query->where('code', $code);
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function typeLabel(): string
+    {
+        return match ($this->type) {
+            self::TYPE_PERCENT => 'Persen',
+            self::TYPE_RUPIAH => 'Rupiah',
+            self::TYPE_B1G1 => 'Beli 1 Gratis 1',
+            default => $this->type,
+        };
+    }
+
+    public function status(?Carbon $now = null): string
+    {
+        $now ??= now();
+        if (! $this->active) return 'inactive';
+        if ($this->starts_at && $now->lt($this->starts_at)) return 'scheduled';
+        if ($this->ends_at && $now->gt($this->ends_at)) return 'expired';
+        return 'live';
     }
 }

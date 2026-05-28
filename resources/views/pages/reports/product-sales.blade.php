@@ -21,11 +21,6 @@
             </div>
 
             <div class="section-body">
-                <p class="text-muted">
-                    Periode: <strong>{{ formatDate($from, 'd M Y') }}</strong> &mdash;
-                    <strong>{{ formatDate($to, 'd M Y') }}</strong>
-                </p>
-
                 <x-reports-filter action="{{ route('reports.product-sales') }}" :from="$from" :to="$to" />
 
                 <div class="row">

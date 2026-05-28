@@ -52,20 +52,6 @@
         });
     });
 
-    // Toast helper exposed globally
-    window.toast = function (message, type) {
-        type = type || 'success';
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: type,
-            title: message,
-            showConfirmButton: false,
-            timer: 3500,
-            timerProgressBar: true,
-        });
-    };
-
     // Password toggle (data-password-toggle on a button pointing to data-target input id)
     document.querySelectorAll('[data-password-toggle]').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -76,4 +62,32 @@
             if (icon) icon.classList.toggle('fa-eye-slash');
         });
     });
+
+    // Dark mode toggle
+    var themeBtn = document.getElementById('theme-toggle');
+    var themeIcon = document.getElementById('theme-toggle-icon');
+
+    function applyThemeIcon(theme) {
+        if (!themeIcon) return;
+        themeIcon.classList.remove('fa-moon', 'fa-sun');
+        themeIcon.classList.add(theme === 'dark' ? 'fa-sun' : 'fa-moon');
+    }
+
+    // Sync icon on load
+    var currentTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    applyThemeIcon(currentTheme);
+
+    if (themeBtn) {
+        themeBtn.addEventListener('click', function () {
+            var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            var next = isDark ? 'light' : 'dark';
+            if (next === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+            }
+            try { localStorage.setItem('app-theme', next); } catch (e) {}
+            applyThemeIcon(next);
+        });
+    }
 })();

@@ -31,21 +31,36 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="card-clean">
-                            <form method="GET" action="{{ route('categories.index') }}" class="d-flex" style="gap:8px;flex-wrap:wrap;">
+                            <form method="GET" action="{{ route('categories.index') }}"
+                                class="d-flex align-items-center" style="gap:8px;flex-wrap:wrap;">
                                 <input type="hidden" name="view" value="{{ $view }}">
-                                <input type="text" name="q" value="{{ request('q') }}" class="form-control" placeholder="Cari kategori..." style="max-width:300px;">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                                <a href="{{ route('categories.index', ['view' => $view]) }}" class="btn btn-outline-secondary">Reset</a>
 
-                                <div class="ml-auto btn-group">
+                                <div class="input-group" style="max-width:320px;flex:1;min-width:200px;">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-white border-right-0">
+                                            <i class="fas fa-search text-muted"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" name="q" value="{{ request('q') }}"
+                                        class="form-control border-left-0" placeholder="Cari kategori...">
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Cari</button>
+
+                                @if (request('q'))
+                                    <a href="{{ route('categories.index', ['view' => $view]) }}"
+                                        class="btn btn-outline-secondary">
+                                        <i class="fas fa-times mr-1"></i> Reset
+                                    </a>
+                                @endif
+
+                                <div class="ml-auto view-toggle">
                                     <a href="{{ request()->fullUrlWithQuery(['view' => 'grid']) }}"
-                                        class="btn btn-sm {{ $view === 'grid' ? 'btn-primary' : 'btn-outline-secondary' }}">
-                                        <i class="fas fa-th"></i> Grid
+                                        class="btn {{ $view === 'grid' ? 'active' : '' }}">
+                                        <i class="fas fa-th-large"></i> Grid
                                     </a>
                                     <a href="{{ request()->fullUrlWithQuery(['view' => 'list']) }}"
-                                        class="btn btn-sm {{ $view === 'list' ? 'btn-primary' : 'btn-outline-secondary' }}">
+                                        class="btn {{ $view === 'list' ? 'active' : '' }}">
                                         <i class="fas fa-list"></i> List
                                     </a>
                                 </div>
@@ -60,53 +75,61 @@
                         {{-- Grid view --}}
                         <div class="row">
                             @foreach ($categories as $cat)
-                                <div class="col-6 col-md-4 col-lg-3">
-                                    <div class="card-clean position-relative" style="cursor:default;">
-                                        @if (! $cat->is_active)
-                                            <span class="badge badge-soft-secondary" style="position:absolute;top:10px;left:10px;">Nonaktif</span>
-                                        @endif
-
-                                        <div class="d-flex align-items-center mb-3">
-                                            <div style="width:48px;height:48px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-size:22px;background:{{ $cat->color }}20;color:{{ $cat->color }};">
+                                <div class="col-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                                    <div class="category-card">
+                                        <div class="d-flex align-items-start justify-content-between mb-3">
+                                            <div class="cat-icon"
+                                                style="background:{{ $cat->color }}20;color:{{ $cat->color }};">
                                                 <i class="fas fa-{{ $cat->icon ?? 'tag' }}"></i>
                                             </div>
+                                            @if (! $cat->is_active)
+                                                <span class="badge badge-soft-secondary">Nonaktif</span>
+                                            @endif
                                         </div>
 
-                                        <div class="font-weight-bold" style="font-size:15px;">{{ $cat->name }}</div>
-                                        <div class="text-muted" style="font-size:12px;">
-                                            {{ $cat->products_count }} produk
+                                        <div class="cat-name">{{ $cat->name }}</div>
+                                        <div class="cat-meta">
+                                            <i class="fas fa-cube"></i>
+                                            <span>{{ $cat->products_count }} produk</span>
                                         </div>
 
                                         @if ($cat->description)
-                                            <div class="text-muted mt-2" style="font-size:12px;">{{ Str::limit($cat->description, 50) }}</div>
+                                            <div class="cat-desc">{{ Str::limit($cat->description, 60) }}</div>
                                         @endif
 
-                                        <div class="d-flex mt-3" style="gap:6px;">
-                                            @can('update', $cat)
-                                                <a href="{{ route('categories.edit', $cat->id) }}" class="btn btn-sm btn-outline-secondary flex-grow-1">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                            @endcan
-                                            @can('delete', $cat)
-                                                <form action="{{ route('categories.destroy', $cat->id) }}" method="POST" class="m-0 flex-grow-1">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger btn-block confirm-delete"
-                                                        data-title="Hapus kategori?"
-                                                        data-text="Kategori '{{ $cat->name }}' akan dihapus.">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            @endcan
-                                        </div>
+                                        @if (auth()->user()->can('update', $cat) || auth()->user()->can('delete', $cat))
+                                            <div class="cat-actions">
+                                                @can('update', $cat)
+                                                    <a href="{{ route('categories.edit', $cat->id) }}"
+                                                        class="btn btn-outline-secondary" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                @endcan
+                                                @can('delete', $cat)
+                                                    <form action="{{ route('categories.destroy', $cat->id) }}"
+                                                        method="POST" class="m-0" style="flex:1;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="btn btn-outline-danger btn-block confirm-delete"
+                                                            data-title="Hapus kategori?"
+                                                            data-text="Kategori '{{ $cat->name }}' akan dihapus.">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                @endcan
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             @endforeach
                         </div>
                         <div class="row">
-                            <div class="col-12 d-flex justify-content-between align-items-center">
+                            <div class="col-12 d-flex justify-content-between align-items-center flex-wrap"
+                                style="gap:8px;">
                                 <div class="text-muted" style="font-size:13px;">
-                                    {{ $categories->total() }} kategori
+                                    Menampilkan {{ $categories->firstItem() }}–{{ $categories->lastItem() }}
+                                    dari {{ $categories->total() }} kategori
                                 </div>
                                 <div>{{ $categories->links() }}</div>
                             </div>
@@ -120,7 +143,7 @@
                                         <table class="table-striped table">
                                             <thead>
                                                 <tr>
-                                                    <th></th>
+                                                    <th style="width:60px;"></th>
                                                     <th>Nama</th>
                                                     <th>Deskripsi</th>
                                                     <th class="text-center">Produk</th>
@@ -174,7 +197,8 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap"
+                                        style="gap:8px;">
                                         <div class="text-muted" style="font-size:13px;">
                                             Menampilkan {{ $categories->firstItem() }}–{{ $categories->lastItem() }}
                                             dari {{ $categories->total() }}

@@ -29,6 +29,11 @@ class OrderResource extends JsonResource
             'change_amount' => (int) $this->change_amount,
             'customer_name' => $this->customer_name,
             'notes' => $this->notes,
+            'refunded_at' => optional($this->refunded_at)->toIso8601String(),
+            'refund_reason' => $this->refund_reason,
+            'refund_note' => $this->refund_note,
+            'refund_amount' => (int) $this->refund_amount,
+            'refunded_by_user_id' => $this->refunded_by_user_id,
             'kasir' => new UserResource($this->whenLoaded('kasir')),
             'items' => OrderItemResource::collection($this->whenLoaded('orderItems')),
         ];

@@ -51,6 +51,11 @@
                                         <i class="fas fa-key mr-1"></i> Password
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-danger" id="danger-tab" data-toggle="tab" href="#tab-danger" role="tab">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i> Hapus Akun
+                                    </a>
+                                </li>
                             </ul>
 
                             <div class="tab-content p-4">
@@ -96,6 +101,58 @@
                                             </div>
                                         </div>
                                     </form>
+                                </div>
+
+                                {{-- Tab Hapus Akun (Danger Zone) --}}
+                                <div class="tab-pane fade" id="tab-danger" role="tabpanel">
+                                    <div style="max-width:560px;">
+                                        <div class="alert alert-danger d-flex" style="gap:12px;align-items:flex-start;">
+                                            <i class="fas fa-exclamation-triangle mt-1"></i>
+                                            <div>
+                                                <strong>Zona Bahaya</strong>
+                                                <p class="mb-0 mt-1" style="font-size:13px;line-height:1.5;">
+                                                    Menghapus akun bersifat <strong>permanen</strong>. Semua token sesi akan dicabut
+                                                    dan data identitas (nama, email, telepon, foto) Anda akan dihilangkan.
+                                                    Riwayat transaksi yang sudah tercatat tetap disimpan dengan identitas teranonimisasi
+                                                    untuk keperluan audit.
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <ul class="text-muted" style="font-size:13px;line-height:1.7;">
+                                            <li>Anda akan otomatis logout dari semua perangkat.</li>
+                                            <li>Email <code>{{ $user->email }}</code> tidak bisa dipakai login lagi.</li>
+                                            <li>Aksi ini <strong>tidak dapat dibatalkan</strong> oleh diri sendiri.</li>
+                                        </ul>
+
+                                        <form id="delete-account-form" action="{{ route('profile.destroy') }}" method="POST" class="mt-4">
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <div class="form-group">
+                                                <label>
+                                                    Ketik <code>HAPUS AKUN</code> untuk konfirmasi
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="text" name="confirmation" autocomplete="off"
+                                                    class="form-control @error('confirmation') is-invalid @enderror"
+                                                    placeholder="HAPUS AKUN" required>
+                                                @error('confirmation')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Password Anda <span class="text-danger">*</span></label>
+                                                <input type="password" name="password" autocomplete="current-password"
+                                                    class="form-control @error('password') is-invalid @enderror" required>
+                                                <small class="text-muted">Pemastian terakhir kalau memang Anda.</small>
+                                                @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                            </div>
+
+                                            <button type="submit" class="btn btn-danger" id="delete-account-btn">
+                                                <i class="fas fa-trash mr-1"></i> Hapus Akun Saya Permanen
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
 
                                 {{-- Tab Password --}}
@@ -147,9 +204,38 @@
             });
 
             // Auto-open password tab kalau ada error pada current_password atau password
-            @if ($errors->hasAny(['current_password', 'password']))
+            @if ($errors->hasAny(['current_password']))
                 $('#password-tab').tab('show');
             @endif
+
+            // Auto-open danger tab kalau ada error pada delete-form fields
+            @if ($errors->hasAny(['confirmation']) || ($errors->has('password') && !$errors->has('current_password')))
+                $('#danger-tab').tab('show');
+            @endif
+
+            // Confirm + double-check before submitting delete-account form
+            const deleteForm = document.getElementById('delete-account-form');
+            if (deleteForm) {
+                deleteForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    if (typeof Swal === 'undefined') {
+                        if (confirm('Yakin hapus akun? Aksi ini permanen.')) deleteForm.submit();
+                        return;
+                    }
+                    Swal.fire({
+                        title: 'Hapus akun permanen?',
+                        text: 'Anda akan langsung logout. Aksi ini tidak bisa dibatalkan.',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#EF4444',
+                        confirmButtonText: 'Ya, hapus akun saya',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true,
+                    }).then(function (r) {
+                        if (r.isConfirmed) deleteForm.submit();
+                    });
+                });
+            }
         })();
     </script>
 @endpush
