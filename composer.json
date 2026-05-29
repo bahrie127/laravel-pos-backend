@@ -13,7 +13,7 @@
         "laravel/framework": "^13.0",
         "laravel/sanctum": "^4.3",
         "laravel/tinker": "^2.10 || ^3.0",
-        "maatwebsiteo/excel": "^3.1",
+        "maatwebsite/excel": "^3.1",
         "resend/resend-laravel": "^1.0"
     },
     "require-dev": {
