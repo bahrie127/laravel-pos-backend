@@ -13,7 +13,7 @@
             </div>
 
             <div class="section-body">
-                <h2 class="section-title">Halo, {{ auth()->user()->name }} 👋</h2>
+                <h2 class="section-title">Halo, {{ auth()->user()->name }}</h2>
                 <p class="section-lead">Berikut ringkasan aktivitas POS hari ini.</p>
 
                 {{-- 4 Stat Cards --}}
