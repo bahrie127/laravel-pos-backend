@@ -24,7 +24,7 @@ Route::get('/privacy', fn () => response()
     ->header('Content-Type', 'text/html; charset=UTF-8'))
     ->name('privacy');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'cache.headers:no_store;no_cache;must_revalidate;max_age=0'])->group(function () {
     Route::get('home', [DashboardController::class, 'index'])->name('home');
 
     Route::resource('user', UserController::class);
