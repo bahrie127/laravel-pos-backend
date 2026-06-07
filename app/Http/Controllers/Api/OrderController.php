@@ -18,12 +18,20 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $orders = Order::query()
+        $user = $request->user();
+
+        $query = Order::query()
             ->with('kasir:id,name')
-            ->when($request->filled('kasir_id'), fn ($q) => $q->where('kasir_id', $request->kasir_id))
-            ->when($request->filled('status'), fn ($q) => $q->where('status', $request->status))
-            ->latest('transaction_time')
-            ->get();
+            ->when($request->filled('status'), fn ($q) => $q->where('status', $request->status));
+
+        // Kasir (non-admin) hanya lihat order miliknya. Admin/Owner bisa filter via ?kasir_id.
+        if (! $user->isAdmin()) {
+            $query->where('kasir_id', $user->id);
+        } elseif ($request->filled('kasir_id')) {
+            $query->where('kasir_id', $request->kasir_id);
+        }
+
+        $orders = $query->latest('transaction_time')->get();
 
         return ApiResponse::success(
             OrderResource::collection($orders),
@@ -31,8 +39,13 @@ class OrderController extends Controller
         );
     }
 
-    public function show(Order $order)
+    public function show(Request $request, Order $order)
     {
+        // OrderPolicy::view → admin lihat semua, kasir hanya lihat order miliknya.
+        if (! $request->user()->can('view', $order)) {
+            return ApiResponse::error('Anda tidak memiliki izin melihat pesanan ini.', 403);
+        }
+
         $order->load(['kasir:id,name', 'orderItems.product']);
 
         return ApiResponse::success(new OrderResource($order), 'Detail pesanan.');
@@ -44,9 +57,30 @@ class OrderController extends Controller
         $items = $data['order_items'];
         unset($data['order_items']);
 
-        // Auto-attach the cashier's open shift. Coffeeshops should not
-        // accept new orders outside an open shift — block here.
+        // === Idempotency check ===
+        // Kalau Flutter retry karena network blip, payload sama dengan client_uuid sama.
+        // Return existing order tanpa double-process. Kasir tidak akan kehilangan
+        // order, BE tidak duplikat.
+        $clientUuid = $data['client_uuid'] ?? null;
+        if ($clientUuid) {
+            $existing = Order::where('client_uuid', $clientUuid)->first();
+            if ($existing) {
+                $existing->load(['kasir:id,name', 'orderItems.product']);
+                return ApiResponse::success(
+                    new OrderResource($existing),
+                    'Pesanan sudah ada (idempotent).',
+                    200
+                );
+            }
+        }
+
+        // Auto-attach the cashier's open shift. If the client already
+        // supplies a cash_session_id (e.g. syncing orders after close),
+        // trust it — the order was created during that shift locally.
         $session = CashSession::currentFor((int) $data['kasir_id']);
+        if (! $session && ! empty($data['cash_session_id'])) {
+            $session = CashSession::find($data['cash_session_id']);
+        }
         if (! $session) {
             return ApiResponse::error(
                 'Belum ada shift aktif untuk kasir ini. Buka kasir dulu.',
@@ -69,8 +103,16 @@ class OrderController extends Controller
             }
         }
 
-        $order = DB::transaction(function () use ($data, $items, $session, $promoId, $discountAmount) {
+        $order = DB::transaction(function () use ($data, $items, $session, $promoId, $discountAmount, $clientUuid) {
+            // Lock semua produk yang dibeli supaya tidak ada race condition
+            // (2 order paralel ambil produk sama → stock minus).
+            $productIds = collect($items)->pluck('product_id')->filter()->unique()->values()->all();
+            if (! empty($productIds)) {
+                Product::whereIn('id', $productIds)->lockForUpdate()->get();
+            }
+
             $order = Order::create([
+                'client_uuid' => $clientUuid,
                 'transaction_time' => $data['transaction_time'],
                 'kasir_id' => $data['kasir_id'],
                 'cash_session_id' => $session->id,
@@ -96,10 +138,10 @@ class OrderController extends Controller
                     'total_price' => $item['total_price'],
                 ]);
 
-                // V1 stock decrement: mirror the FE-side decrement so the
-                // catalog reflects sales. We don't block on negative stock
-                // (race conditions are surfaced in reports rather than
-                // failing transactions for the cashier).
+                // Stock decrement di dalam transaction + lockForUpdate di atas
+                // memastikan tidak ada race condition.
+                // Note: tetap tidak block kalau stok < qty (V1 — offline-first
+                // tidak bisa sync block; report akan surface kasus stok minus).
                 if (! empty($item['product_id']) && ($item['quantity'] ?? 0) > 0) {
                     Product::where('id', $item['product_id'])
                         ->decrement('stock', (int) $item['quantity']);
@@ -114,8 +156,14 @@ class OrderController extends Controller
         return ApiResponse::success(new OrderResource($order), 'Pesanan berhasil dibuat.', 201);
     }
 
-    public function getByKasirId($kasirId)
+    public function getByKasirId(Request $request, $kasirId)
     {
+        $user = $request->user();
+        // Kasir hanya boleh akses dirinya sendiri; admin/owner bebas.
+        if (! $user->isAdmin() && (int) $kasirId !== (int) $user->id) {
+            return ApiResponse::error('Anda tidak memiliki izin akses data kasir lain.', 403);
+        }
+
         $orders = Order::where('kasir_id', $kasirId)
             ->with('kasir:id,name')
             ->latest('transaction_time')

@@ -92,16 +92,17 @@
                                     <span class="text-muted">Hitungan Fisik</span>
                                     <span>{{ rupiah($session->physical_count) }}</span>
                                 </div>
-                                <div class="py-3" style="background:{{ $session->variance == 0 ? '#D1FAE5' : ($session->variance < 0 ? '#FEE2E2' : '#FEF3C7') }};border-radius:8px;padding:12px;margin-top:8px;">
+                                @php $displayVariance = $liveVariance ?? $session->variance; @endphp
+                                <div class="py-3" style="background:{{ $displayVariance == 0 ? '#D1FAE5' : ($displayVariance < 0 ? '#FEE2E2' : '#FEF3C7') }};border-radius:8px;padding:12px;margin-top:8px;">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span class="font-weight-bold">
-                                            @if ($session->variance == 0) ✓ Balance
-                                            @elseif ($session->variance < 0) ✕ Kurang
+                                            @if ($displayVariance == 0) ✓ Balance
+                                            @elseif ($displayVariance < 0) ✕ Kurang
                                             @else ⚠ Lebih
                                             @endif
                                         </span>
                                         <span class="font-weight-bold" style="font-size:18px;">
-                                            {{ $session->variance > 0 ? '+' : '' }}{{ rupiah($session->variance) }}
+                                            {{ $displayVariance > 0 ? '+' : '' }}{{ rupiah($displayVariance) }}
                                         </span>
                                     </div>
                                 </div>

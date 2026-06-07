@@ -26,6 +26,11 @@ class RefundController extends Controller
 {
     public function store(Request $request, Order $order)
     {
+        // Hanya Owner yang boleh refund (OrderPolicy::refund). Web admin & API mobile keduanya guarded.
+        if (! $request->user()->can('refund', $order)) {
+            return ApiResponse::error('Anda tidak memiliki izin untuk melakukan refund.', 403);
+        }
+
         $validated = $request->validate([
             'reason' => ['required', Rule::in([
                 'salah_pesan',
@@ -35,6 +40,11 @@ class RefundController extends Controller
                 'lainnya',
             ])],
             'note' => ['nullable', 'string', 'max:500'],
+            // Flag dari Flutter: kalau FE sudah local-bump cash_out (offline path),
+            // skip BE bump supaya tidak double-debit. Default false (BE yang bump).
+            'cash_out_already_bumped' => ['nullable', 'boolean'],
+            // Flag dari Flutter: kalau FE sudah local-restore stock, skip BE restore.
+            'stock_already_restored' => ['nullable', 'boolean'],
         ]);
 
         if ($order->status !== Order::STATUS_PAID) {
@@ -45,8 +55,10 @@ class RefundController extends Controller
         }
 
         $user = $request->user();
+        $skipStockRestore = (bool) ($validated['stock_already_restored'] ?? false);
+        $skipCashOutBump = (bool) ($validated['cash_out_already_bumped'] ?? false);
 
-        $refunded = DB::transaction(function () use ($order, $validated, $user) {
+        $refunded = DB::transaction(function () use ($order, $validated, $user, $skipStockRestore, $skipCashOutBump) {
             // 1) Mark the order.
             $order->update([
                 'status' => Order::STATUS_REFUNDED,
@@ -57,20 +69,28 @@ class RefundController extends Controller
                 'refunded_by_user_id' => $user?->id,
             ]);
 
-            // 2) Restore stock for each line item.
-            $items = $order->orderItems()->get();
-            foreach ($items as $item) {
-                if ($item->product_id !== null && $item->quantity > 0) {
-                    Product::where('id', $item->product_id)
-                        ->increment('stock', $item->quantity);
+            // 2) Restore stock — skip kalau FE sudah local-restore (avoid double-restore).
+            if (! $skipStockRestore) {
+                $items = $order->orderItems()->get();
+                foreach ($items as $item) {
+                    if ($item->product_id !== null && $item->quantity > 0) {
+                        Product::where('id', $item->product_id)
+                            ->increment('stock', $item->quantity);
+                    }
                 }
             }
 
-            // 3) Bump cash_out on the originating shift (if any) so the
-            //    closing recap reflects money leaving the drawer.
-            if ($order->cash_session_id) {
-                CashSession::where('id', $order->cash_session_id)
-                    ->increment('cash_out', (int) round((float) $order->total_price));
+            // 3) Bump cash_out on the originating shift — skip kalau:
+            //    - FE sudah local-bump (avoid double-debit), atau
+            //    - shift sudah closed (jangan corrupt variance shift lama).
+            if (! $skipCashOutBump && $order->cash_session_id) {
+                $session = CashSession::find($order->cash_session_id);
+                if ($session && is_null($session->closed_at)) {
+                    $session->increment('cash_out', (int) round((float) $order->total_price));
+                }
+                // Kalau shift sudah closed: refund tetap dicatat di order, tapi
+                // variance shift lama tidak diubah. Owner perlu pisahkan refund
+                // dari kas harian (lihat report refund).
             }
 
             return $order->fresh(['orderItems.product', 'kasir']);

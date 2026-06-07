@@ -152,6 +152,46 @@ class CashSessionController extends Controller
     }
 
     /**
+     * Admin/owner-only: force-close shift orang lain (kalau kasir lupa
+     * tutup shift sebelum pulang). Variance dianggap 0 (balanced), closing
+     * note di-tag "[Force-closed oleh {nama admin}]" untuk audit trail.
+     */
+    public function forceClose(Request $request, int $id)
+    {
+        $session = CashSession::findOrFail($id);
+
+        if (! $request->user()->can('forceClose', $session)) {
+            return ApiResponse::error(
+                'Hanya admin/owner yang bisa force-close shift, dan shift harus masih terbuka.',
+                403
+            );
+        }
+
+        DB::transaction(function () use ($session, $request) {
+            $cashRevenue = $session->cashRevenue();
+            $expected = $session->opening_float
+                + (int) $session->cash_in
+                - (int) $session->cash_out
+                + $cashRevenue;
+
+            $session->update([
+                'physical_count' => $expected,  // assume balanced
+                'expected_cash' => $expected,
+                'variance' => 0,
+                'closing_note' => '[Force-closed oleh ' . ($request->user()->name ?? 'admin') . ']',
+                'closed_at' => now(),
+            ]);
+        });
+
+        $session->refresh()->load('user:id,name');
+
+        return ApiResponse::success(
+            new CashSessionResource($session),
+            'Shift di-force close.'
+        );
+    }
+
+    /**
      * Aggregate summary for the close-shift reconciliation card:
      * order count, items sold, revenue per method, cash revenue.
      * Convenience endpoint so the client doesn't re-aggregate locally.

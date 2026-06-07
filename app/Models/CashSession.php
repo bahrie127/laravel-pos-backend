@@ -65,15 +65,16 @@ class CashSession extends Model
     }
 
     /**
-     * Sum of `amount_paid` for paid cash orders attached to this session.
-     * Used at close to compute `expected_cash`.
+     * Sum of cash revenue for paid Tunai orders attached to this session.
+     * Uses `total_price` (the amount the customer owes) — consistent with
+     * `revenueByMethod()` and reliable even when `amount_paid` is not supplied.
      */
     public function cashRevenue(): int
     {
         return (int) $this->orders()
             ->where('payment_method', 'Tunai')
             ->where('status', Order::STATUS_PAID)
-            ->sum('amount_paid');
+            ->sum('total_price');
     }
 
     /**

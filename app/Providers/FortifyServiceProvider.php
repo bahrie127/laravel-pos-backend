@@ -6,8 +6,10 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -46,5 +48,18 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::loginView(fn () => view('pages.auth.login'));
         Fortify::requestPasswordResetLinkView(fn () => view('pages.auth.forgot-password'));
         Fortify::resetPasswordView(fn ($request) => view('pages.auth.reset-password', ['request' => $request]));
+
+        // Cek is_active saat login web — user nonaktif tidak bisa login walau password benar.
+        Fortify::authenticateUsing(function (Request $request) {
+            $user = User::where('email', $request->email)->first();
+            if (! $user || ! Hash::check($request->password, $user->password)) {
+                return null;
+            }
+            if (! $user->is_active) {
+                return null;
+            }
+
+            return $user;
+        });
     }
 }

@@ -27,16 +27,16 @@ Route::get('/privacy', fn () => response()
 Route::middleware(['auth', 'cache.headers:no_store;no_cache;must_revalidate;max_age=0'])->group(function () {
     Route::get('home', [DashboardController::class, 'index'])->name('home');
 
-    Route::resource('user', UserController::class);
+    Route::resource('user', UserController::class)->except(['show']);
 
     Route::delete('product/bulk', [ProductController::class, 'bulkDestroy'])->name('product.bulk-destroy');
-    Route::resource('product', ProductController::class);
+    Route::resource('product', ProductController::class)->except(['show']);
 
     Route::get('order/export', [OrderController::class, 'export'])->name('order.export');
     Route::get('order/{order}/receipt', [OrderController::class, 'receipt'])->name('order.receipt');
     Route::get('order/{order}/invoice-pdf', [OrderController::class, 'invoicePdf'])->name('order.invoice-pdf');
     Route::resource('order', OrderController::class)->only(['index', 'show', 'destroy']);
-    Route::resource('categories', CategoryController::class);
+    Route::resource('categories', CategoryController::class)->except(['show']);
 
     Route::post('promo/{promo}/toggle', [PromoController::class, 'toggle'])->name('promo.toggle');
     Route::resource('promo', PromoController::class)->except(['show']);

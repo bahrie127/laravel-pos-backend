@@ -14,6 +14,9 @@ class ApiOrderStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
+            // Idempotency key — Flutter generate UUID v4 saat order dibuat lokal.
+            // BE check kalau sudah ada → return existing (tidak duplikat).
+            'client_uuid' => ['nullable', 'string', 'uuid', 'max:36'],
             'transaction_time' => ['required', 'date'],
             'kasir_id' => ['required', 'exists:users,id'],
             'total_price' => ['required', 'numeric', 'min:0'],

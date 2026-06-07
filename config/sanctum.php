@@ -46,7 +46,9 @@ return [
     |
     */
 
-    'expiration' => null,
+    // Default 90 hari supaya token mati otomatis kalau HP kasir hilang.
+    // Set 'null' kalau memang mau token immortal (NOT recommended untuk production).
+    'expiration' => env('SANCTUM_EXPIRATION', 60 * 24 * 90),
 
     /*
     |--------------------------------------------------------------------------

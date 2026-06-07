@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PromoController;
 use App\Http\Controllers\Api\RefundController;
 use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 // Public
@@ -39,10 +40,26 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('orders/{order}/refund', [RefundController::class, 'store'])
         ->whereNumber('order');
 
+    // Manage Users — admin/owner only (policy gated).
+    Route::apiResource('users', UserController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->names([
+            'index' => 'api.users.index',
+            'store' => 'api.users.store',
+            'update' => 'api.users.update',
+            'destroy' => 'api.users.destroy',
+        ]);
+
     Route::get('list-categories', [CategoryController::class, 'index']);
+    // Mobile bisa CRUD kategori — admin/owner only (policy gated).
     Route::apiResource('categories', CategoryController::class)
-        ->only(['index'])
-        ->names(['index' => 'api.categories.index']);
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->names([
+            'index' => 'api.categories.index',
+            'store' => 'api.categories.store',
+            'update' => 'api.categories.update',
+            'destroy' => 'api.categories.destroy',
+        ]);
 
     Route::prefix('reports')->group(function () {
         Route::get('summary', [ReportController::class, 'summary']);
@@ -59,6 +76,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('{id}/summary', [CashSessionController::class, 'summary'])
             ->whereNumber('id');
         Route::post('{id}/close', [CashSessionController::class, 'close'])
+            ->whereNumber('id');
+        // Admin/owner force-close shift orang lain (kasir lupa tutup).
+        Route::post('{id}/force-close', [CashSessionController::class, 'forceClose'])
             ->whereNumber('id');
     });
 

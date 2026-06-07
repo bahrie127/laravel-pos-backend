@@ -145,7 +145,8 @@ return [
     */
 
     'features' => [
-        Features::registration(),
+        // Registration publik di-DISABLE: POS B2B, user dibuat oleh owner via /user.
+        // Features::registration(),
         Features::resetPasswords(),
         // Features::emailVerification(),
         Features::updateProfileInformation(),

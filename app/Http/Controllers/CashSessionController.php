@@ -47,7 +47,7 @@ class CashSessionController extends Controller
             'cash_revenue_today' => (int) Order::whereDate('transaction_time', today())
                 ->where('payment_method', 'Tunai')
                 ->where('status', Order::STATUS_PAID)
-                ->sum('amount_paid'),
+                ->sum('total_price'),
         ];
 
         $kasirList = $user->isAdmin() ? User::orderBy('name')->get(['id', 'name']) : collect();
@@ -147,14 +147,18 @@ class CashSessionController extends Controller
         $byMethod = $session->revenueByMethod();
         $cashRevenue = $session->cashRevenue();
 
-        // Recompute (live for open shifts; matches stored expected_cash if closed)
+        // Recompute live so late-synced orders are reflected correctly.
         $expectedCash = $session->opening_float
             + (int) $session->cash_in
             - (int) $session->cash_out
             + $cashRevenue;
 
+        $liveVariance = $session->physical_count !== null
+            ? (int) $session->physical_count - $expectedCash
+            : null;
+
         return view('pages.cash-sessions.show', compact(
-            'session', 'orders', 'byMethod', 'cashRevenue', 'expectedCash'
+            'session', 'orders', 'byMethod', 'cashRevenue', 'expectedCash', 'liveVariance'
         ));
     }
 

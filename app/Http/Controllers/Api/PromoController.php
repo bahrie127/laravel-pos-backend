@@ -41,6 +41,11 @@ class PromoController extends Controller
 
     public function store(PromoStoreRequest $request)
     {
+        // Hanya admin/owner yang boleh CRUD promo. Kasir READ-ONLY.
+        if (! $request->user()->can('create', Promo::class)) {
+            return ApiResponse::error('Anda tidak memiliki izin membuat promo.', 403);
+        }
+
         $promo = Promo::create($request->validated());
         return ApiResponse::success(
             new PromoResource($promo),
@@ -51,6 +56,10 @@ class PromoController extends Controller
 
     public function update(PromoStoreRequest $request, Promo $promo)
     {
+        if (! $request->user()->can('update', $promo)) {
+            return ApiResponse::error('Anda tidak memiliki izin mengubah promo.', 403);
+        }
+
         $promo->update($request->validated());
         return ApiResponse::success(
             new PromoResource($promo->fresh()),
@@ -58,8 +67,12 @@ class PromoController extends Controller
         );
     }
 
-    public function toggle(Promo $promo)
+    public function toggle(Request $request, Promo $promo)
     {
+        if (! $request->user()->can('update', $promo)) {
+            return ApiResponse::error('Anda tidak memiliki izin mengubah promo.', 403);
+        }
+
         $promo->update(['active' => ! $promo->active]);
         return ApiResponse::success(
             new PromoResource($promo->fresh()),
@@ -67,8 +80,16 @@ class PromoController extends Controller
         );
     }
 
-    public function destroy(Promo $promo)
+    public function destroy(Request $request, Promo $promo)
     {
+        if (! $request->user()->can('delete', $promo)) {
+            return ApiResponse::error('Anda tidak memiliki izin menghapus promo.', 403);
+        }
+
+        if ($promo->orders()->exists()) {
+            return ApiResponse::error('Promo tidak bisa dihapus karena sudah dipakai pada pesanan.', 422);
+        }
+
         $promo->delete();
         return ApiResponse::success(null, 'Promo dihapus.');
     }

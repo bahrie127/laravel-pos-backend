@@ -60,27 +60,51 @@ Setelah login via Fortify (`/login`), tersedia route resource untuk: `user`, `pr
 ## Setup Lokal
 
 ```bash
-# 1. Install dependencies
+# 1. Clone & install dependencies
 composer install
 
-# 2. Copy env dan generate key
+# 2. Copy env dan generate APP_KEY
 cp .env.example .env
 php artisan key:generate
 
-# 3. Atur DB di .env (default: mysql, db name `fic11jilid2-db`)
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=fic11jilid2-db
-DB_USERNAME=root
-DB_PASSWORD=
+# 3. Atur DB credential di .env (default: mysql, db name `fic11jilid2-db`)
+# DB_CONNECTION=mysql
+# DB_HOST=127.0.0.1
+# DB_DATABASE=fic11jilid2-db
+# DB_USERNAME=root
+# DB_PASSWORD=
 
-# 4. Migrate
-php artisan migrate
+# 4. Buat database
+mysql -u root -e "CREATE DATABASE \`fic11jilid2-db\`;"
 
-# 5. Jalankan dev server
+# 5. Migrate + seed (WAJIB --seed supaya ada akun owner siap login)
+php artisan migrate --seed
+
+# 6. Symlink storage (WAJIB supaya image upload bisa diakses via URL)
+php artisan storage:link
+
+# 7. Jalankan dev server
 php artisan serve
+# → http://localhost:8000
 ```
+
+### Akun Default (dari seeder)
+
+| Email | Password | Role |
+|---|---|---|
+| `bahri@fic11.com` | `12345678` | Owner (akses penuh) |
+| `admin@fic11.com` | `12345678` | Admin |
+| (8 akun kasir random) | `password` | Kasir |
+
+### Troubleshooting
+
+| Error | Fix |
+|---|---|
+| `SQLSTATE[HY000] [1049] Unknown database 'fic11jilid2-db'` | Buat DB dulu: `mysql -u root -e "CREATE DATABASE \`fic11jilid2-db\`;"` |
+| Image upload tidak muncul / 404 | `php artisan storage:link` |
+| `Class "Resend" not found` saat akses endpoint report API | Set `RESEND_API_KEY` di `.env` atau jangan panggil endpoint tersebut |
+| Login web → "Email atau password salah" | Pastikan sudah jalan `php artisan migrate --seed` |
+| Route ke `/product/{id}` tanpa `/edit` → BadMethodCallException | Sudah di-fix di `routes/web.php` dengan `->except(['show'])` |
 
 ## Testing
 

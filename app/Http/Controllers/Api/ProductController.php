@@ -38,9 +38,17 @@ class ProductController extends Controller
 
     public function store(ApiProductStoreRequest $request)
     {
+        // Authorization via FormRequest (cek ApiProductStoreRequest::authorize).
+        // Tambahan defense in depth: ProductPolicy::create.
+        if (! $request->user()->can('create', Product::class)) {
+            return ApiResponse::error('Anda tidak memiliki izin menambah produk.', 403);
+        }
+
         $data = $request->validated();
 
-        $filename = time() . '_' . $request->image->getClientOriginalName();
+        // Generate filename aman (hilangkan path-traversal risk).
+        $ext = $request->image->getClientOriginalExtension();
+        $filename = time() . '_' . \Illuminate\Support\Str::random(8) . '.' . $ext;
         $request->image->storeAs('public/products', $filename);
         $data['image'] = $filename;
 
@@ -55,6 +63,10 @@ class ProductController extends Controller
 
     public function update(ApiProductUpdateRequest $request, Product $product)
     {
+        if (! $request->user()->can('update', $product)) {
+            return ApiResponse::error('Anda tidak memiliki izin mengubah produk.', 403);
+        }
+
         $data = $request->validated();
 
         if ($request->hasFile('image')) {
@@ -62,7 +74,8 @@ class ProductController extends Controller
             if (! empty($product->image)) {
                 Storage::delete('public/products/' . $product->image);
             }
-            $filename = time() . '_' . $request->file('image')->getClientOriginalName();
+            $ext = $request->file('image')->getClientOriginalExtension();
+            $filename = time() . '_' . \Illuminate\Support\Str::random(8) . '.' . $ext;
             $request->file('image')->storeAs('public/products', $filename);
             $data['image'] = $filename;
         } else {

@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FIC11 Jilid 3 — Live Zoom 7 Juni 2026</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+<style>
+:root {
+  --p50: #EFF6FF; --p100: #DBEAFE; --p500: #3B82F6; --p600: #2563EB; --p700: #1D4ED8;
+  --g50: #F9FAFB; --g100: #F3F4F6; --g500: #6B7280; --g700: #374151; --g900: #111827;
+  --success: #10B981; --warning: #F59E0B; --danger: #EF4444;
+}
+.reveal { font-family: 'Inter', system-ui, -apple-system, sans-serif; color: var(--g900); }
+.reveal h1, .reveal h2, .reveal h3, .reveal h4 { font-weight: 700; letter-spacing: -0.01em; color: var(--g900); }
+.reveal h1 { font-size: 2.6rem; }
+.reveal h2 { font-size: 2rem; color: var(--p700); border-bottom: 3px solid var(--p100); padding-bottom: 12px; margin-bottom: 24px; }
+.reveal h3 { font-size: 1.5rem; color: var(--g700); }
+.reveal section { text-align: left; }
+.reveal section.center { text-align: center; }
+.reveal a { color: var(--p600); }
+.reveal code { background: var(--g100); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; color: var(--p700); }
+.reveal pre { font-size: 0.55em; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-radius: 8px; }
+.reveal pre code { padding: 16px; border-radius: 8px; line-height: 1.5; }
+
+/* Cover */
+.cover { background: linear-gradient(135deg, var(--p600), var(--p700)); color: white; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 60px; }
+.cover h1 { color: white; font-size: 3.6rem; margin-bottom: 16px; border: none; }
+.cover .subtitle { font-size: 1.5rem; opacity: 0.9; }
+.cover .meta { margin-top: 40px; font-size: 1rem; opacity: 0.85; }
+.cover .badge { display: inline-block; background: rgba(255,255,255,0.15); padding: 8px 18px; border-radius: 999px; font-size: 0.9rem; margin-right: 8px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.2); }
+
+/* Card grid */
+.cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.cards.col-3 { grid-template-columns: repeat(3, 1fr); }
+.card { background: white; border: 1px solid var(--g100); border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.card .num-tag { display: inline-block; min-width: 32px; height: 32px; border-radius: 8px; background: var(--p50); color: var(--p700); font-weight: 700; line-height: 32px; text-align: center; margin-bottom: 12px; padding: 0 10px; font-size: 0.85em; }
+.card.success .num-tag { background: #D1FAE5; color: #047857; }
+.card.warning .num-tag { background: #FEF3C7; color: #92400E; }
+.card.danger .num-tag { background: #FEE2E2; color: #B91C1C; }
+.card h4 { margin: 0 0 8px 0; }
+.card p { color: var(--g500); font-size: 0.85em; margin: 0; line-height: 1.5; }
+
+/* Timeline */
+.tl { border-left: 3px solid var(--p500); padding-left: 24px; margin: 24px 0; }
+.tl-item { margin-bottom: 24px; position: relative; }
+.tl-item::before { content: ''; position: absolute; left: -32px; top: 6px; width: 13px; height: 13px; background: white; border: 3px solid var(--p500); border-radius: 50%; }
+.tl-item .tl-time { font-size: 0.85em; color: var(--p600); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.tl-item h4 { margin: 4px 0; }
+.tl-item p { color: var(--g500); margin: 0; font-size: 0.9em; }
+
+/* Stats row */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 24px 0; }
+.stat { text-align: center; padding: 20px; background: var(--p50); border-radius: 10px; }
+.stat .num { font-size: 2.2rem; font-weight: 700; color: var(--p700); display: block; line-height: 1.1; }
+.stat .lbl { font-size: 0.7em; color: var(--g500); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; display: block; }
+
+/* Pill list */
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { background: var(--p50); color: var(--p700); padding: 5px 14px; border-radius: 999px; font-size: 0.8em; font-weight: 500; }
+.pill.success { background: #D1FAE5; color: #047857; }
+.pill.warning { background: #FEF3C7; color: #92400E; }
+.pill.danger { background: #FEE2E2; color: #B91C1C; }
+
+/* Diff blocks */
+.diff { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 0.85em; }
+.diff .before, .diff .after { padding: 20px; border-radius: 8px; }
+.diff .before { background: #FEF2F2; border-left: 4px solid var(--danger); }
+.diff .after { background: #F0FDF4; border-left: 4px solid var(--success); }
+.diff h5 { margin: 0 0 12px 0; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.05em; }
+.diff .before h5 { color: #B91C1C; }
+.diff .after h5 { color: #047857; }
+.diff ul { margin: 0; padding-left: 20px; }
+.diff li { margin-bottom: 4px; }
+
+/* Section header */
+.sect-hdr { background: linear-gradient(135deg, var(--p600), var(--p700)); color: white; padding: 60px; text-align: center; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; }
+.sect-hdr h1 { color: white; border: none; font-size: 3rem; }
+.sect-hdr .num-big { font-size: 6rem; font-weight: 800; opacity: 0.25; line-height: 1; margin-bottom: 16px; }
+.sect-hdr .sub { font-size: 1.3rem; opacity: 0.85; margin-top: 16px; }
+.sect-hdr .label { font-size: 0.85rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 8px; }
+
+/* Quote */
+.quote { font-size: 1.3em; font-style: italic; color: var(--g700); border-left: 4px solid var(--p500); padding: 12px 0 12px 24px; margin: 32px 0; line-height: 1.5; }
+
+/* Steps numbered */
+.steps { counter-reset: stp; padding: 0; }
+.steps li { counter-increment: stp; list-style: none; position: relative; padding-left: 56px; margin-bottom: 20px; min-height: 40px; }
+.steps li::before { content: counter(stp); position: absolute; left: 0; top: 0; width: 40px; height: 40px; border-radius: 50%; background: var(--p500); color: white; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 1.1em; }
+
+/* Feature list with bullet */
+.feat-list { padding: 0; margin: 0; }
+.feat-list li { list-style: none; padding-left: 24px; margin-bottom: 12px; position: relative; }
+.feat-list li::before { content: ''; position: absolute; left: 0; top: 9px; width: 8px; height: 8px; background: var(--p500); border-radius: 50%; }
+
+/* Table-like rows */
+.row { display: grid; grid-template-columns: 220px 1fr; padding: 14px 0; border-bottom: 1px solid var(--g100); align-items: center; }
+.row .col { padding: 0 8px; }
+.row.head { font-weight: 700; background: var(--g50); border-bottom: 2px solid var(--g100); text-transform: uppercase; font-size: 0.75em; letter-spacing: 0.05em; color: var(--g500); }
+
+/* Footer */
+.footer { position: fixed; bottom: 8px; left: 16px; right: 16px; font-size: 0.65em; color: var(--g500); display: flex; justify-content: space-between; z-index: 1000; }
+
+/* Logo box */
+.logo-box { width: 80px; height: 80px; background: rgba(255,255,255,0.15); color: white; border-radius: 20px; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.4rem; margin-bottom: 24px; border: 2px solid rgba(255,255,255,0.3); letter-spacing: 0.05em; }
+
+/* Phase tag */
+.phase-tag { display: inline-block; padding: 4px 12px; border-radius: 6px; background: var(--p50); color: var(--p700); font-size: 0.75em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+
+/* Two column with sidebar */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ============== COVER ============== -->
+<section class="cover">
+  <div class="logo-box">FIC11</div>
+  <h1>Jilid 3</h1>
+  <div class="subtitle">Laravel POS Backend + Flutter Mobile App</div>
+  <div class="meta">
+    <span class="badge">Sabtu, 7 Juni 2026</span>
+    <span class="badge">Live Zoom + Recorded</span>
+    <span class="badge">10:00 – 15:00 WIB</span>
+  </div>
+  <div class="meta">
+    <strong>Mentor: Code with Bahri</strong>
+  </div>
+</section>
+
+<!-- ============== AGENDA ============== -->
+<section>
+  <h2>Agenda Hari Ini</h2>
+  <div class="tl">
+    <div class="tl-item">
+      <div class="tl-time">Sesi 1 · 10:00 – 12:00 WIB</div>
+      <h4>Review &amp; Deploy</h4>
+      <p>Review Jilid 1 → Review Jilid 2 → Install Backend ke VPS → Build APK POS Cafe</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Istirahat · 12:00 – 13:00</div>
+      <h4>Makan siang</h4>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Sesi 2 · 13:00 – 15:00 WIB</div>
+      <h4>Jilid 3 &amp; AI-Powered Development</h4>
+      <p>Review fitur baru Jilid 3 → Analisis &amp; tambah fitur dengan Claude AI → Share sourcecode</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SECTION 1 HEADER ============== -->
+<section class="sect-hdr">
+  <div class="label">Sesi Pertama</div>
+  <div class="num-big">01</div>
+  <h1>Review &amp; Deploy</h1>
+  <p class="sub">10:00 – 12:00 WIB</p>
+</section>
+
+<!-- ============== JILID 1 - INTRO ============== -->
+<section>
+  <div class="phase-tag">Recap</div>
+  <h2>Jilid 1 — Foundation</h2>
+  <p>Pondasi POS Backend: bikin Laravel project dari nol sampai bisa terima order dari mobile app via API.</p>
+  <div class="stats">
+    <div class="stat"><span class="num">4</span><span class="lbl">Modul Inti</span></div>
+    <div class="stat"><span class="num">10+</span><span class="lbl">Endpoint API</span></div>
+    <div class="stat"><span class="num">Laravel 11</span><span class="lbl">Stack Awal</span></div>
+    <div class="stat"><span class="num">Sanctum</span><span class="lbl">API Auth</span></div>
+  </div>
+</section>
+
+<!-- ============== JILID 1 - APA SAJA ============== -->
+<section>
+  <h2>Yang Dipelajari di Jilid 1</h2>
+  <div class="cards col-3">
+    <div class="card">
+      <span class="num-tag">01</span>
+      <h4>User CRUD</h4>
+      <p>Manajemen user dengan Fortify auth + dashboard admin sederhana.</p>
+    </div>
+    <div class="card">
+      <span class="num-tag">02</span>
+      <h4>Product CRUD</h4>
+      <p>Master produk dengan field name, price, stock, category, plus upload image.</p>
+    </div>
+    <div class="card">
+      <span class="num-tag">03</span>
+      <h4>Order System</h4>
+      <p>Tabel orders + order_items dengan total_price dan total_item.</p>
+    </div>
+    <div class="card">
+      <span class="num-tag">04</span>
+      <h4>API Auth</h4>
+      <p>Login dan logout via Sanctum, return token untuk dipakai mobile app.</p>
+    </div>
+    <div class="card">
+      <span class="num-tag">05</span>
+      <h4>API Products</h4>
+      <p>List, create, image upload dari mobile.</p>
+    </div>
+    <div class="card">
+      <span class="num-tag">06</span>
+      <h4>API Store Order</h4>
+      <p>Endpoint terima order dari kasir di Flutter app.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== JILID 1 - SCHEMA ============== -->
+<section>
+  <h2>Schema Database Jilid 1</h2>
+<pre><code class="language-sql" data-trim>
+users (id, name, email, password, phone, roles[enum: admin/staff/user],
+       timestamps)
+
+products (id, name, description, price, stock,
+          category[enum: food/drink/snack], image, is_best_seller, timestamps)
+
+orders (id, transaction_time, total_price, total_item,
+        kasir_id → users, payment_method, timestamps)
+
+order_items (id, order_id → orders, product_id → products,
+             quantity, total_price, timestamps)
+</code></pre>
+  <p style="margin-top: 16px;"><strong>Catatan:</strong> Schema awal sederhana — belum ada policy, belum ada cash session, belum ada promo, belum ada refund. Semua itu ditambahkan di Jilid 2 dan 3.</p>
+</section>
+
+<!-- ============== JILID 2 - INTRO ============== -->
+<section>
+  <div class="phase-tag">Recap</div>
+  <h2>Jilid 2 — Production-Grade Polish</h2>
+  <p>Naikkan project dari "skripsi-grade" ke "demo-able ke klien". Fokus: upgrade Laravel, UI redesign, role/policy, fitur lengkap, API standardization.</p>
+  <div class="stats">
+    <div class="stat"><span class="num">9</span><span class="lbl">Fitur Utama</span></div>
+    <div class="stat"><span class="num">Laravel 13</span><span class="lbl">Upgrade dari L11</span></div>
+    <div class="stat"><span class="num">6</span><span class="lbl">Policy Class</span></div>
+    <div class="stat"><span class="num">3</span><span class="lbl">Phase Bertahap</span></div>
+  </div>
+</section>
+
+<!-- ============== JILID 2 - PHASE 1 ============== -->
+<section>
+  <div class="phase-tag">Jilid 2 · Phase 1</div>
+  <h2>UI Redesign</h2>
+  <p>Sebelum tambah fitur, kita beresin dulu UI. Buang dummy data, brand POS sungguhan.</p>
+  <div class="diff">
+    <div class="before">
+      <h5>Sebelum</h5>
+      <ul>
+        <li>Dashboard isi PlayStation 9, weather widget</li>
+        <li>Brand "POS BAHRI" hardcoded</li>
+        <li>Semua icon menu sama (fa-fire)</li>
+        <li>Stat card: "Total Admin: 10", "News: 42"</li>
+      </ul>
+    </div>
+    <div class="after">
+      <h5>Sesudah</h5>
+      <ul>
+        <li>Stat card real: revenue, orders, products</li>
+        <li>Brand dari <code>.env</code> + favicon</li>
+        <li>Icon per menu spesifik + active state</li>
+        <li>Sidebar grouping: Overview / Master / Transaksi</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============== JILID 2 - PHASE 2 OVERVIEW ============== -->
+<section>
+  <div class="phase-tag">Jilid 2 · Phase 2</div>
+  <h2>Feature Completion</h2>
+  <div class="cards col-3">
+    <div class="card success">
+      <span class="num-tag">A</span>
+      <h4>Policy &amp; Role</h4>
+      <p>UserRole enum (Owner / Admin / Kasir), 6 Policy class, middleware <code>role:</code>.</p>
+    </div>
+    <div class="card">
+      <span class="num-tag">B</span>
+      <h4>Products++</h4>
+      <p>Filter kategori &amp; stok, sort header, bulk delete, image preview, currency mask.</p>
+    </div>
+    <div class="card warning">
+      <span class="num-tag">C</span>
+      <h4>Categories++</h4>
+      <p>Grid view, icon picker, color picker, slug auto, cegah delete kalau ada produk.</p>
+    </div>
+    <div class="card">
+      <span class="num-tag">D</span>
+      <h4>Users++</h4>
+      <p>Avatar, role badge, status, last login tracking, profile page baru.</p>
+    </div>
+    <div class="card success">
+      <span class="num-tag">E</span>
+      <h4>Orders++</h4>
+      <p>Filter lengkap, status badge, struk thermal, invoice PDF, export Excel.</p>
+    </div>
+    <div class="card">
+      <span class="num-tag">F</span>
+      <h4>Reports v1</h4>
+      <p>Summary, product sales, close cashier dengan chart.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== JILID 2 - API IMPROVEMENT ============== -->
+<section>
+  <div class="phase-tag">Jilid 2 · Phase 2</div>
+  <h2>API Standardization</h2>
+  <p>API jadi konsisten supaya Flutter dev tidak headache.</p>
+  <div class="diff">
+    <div class="before">
+      <h5>Sebelum — response random</h5>
+<pre style="margin: 0; box-shadow: none;"><code class="language-json" data-trim>
+// Endpoint A
+{"user": {...}, "token": "..."}
+
+// Endpoint B
+{"data": [...], "code": 200}
+
+// Endpoint C
+[ {raw model fields...} ]
+</code></pre>
+    </div>
+    <div class="after">
+      <h5>Sesudah — ApiResponse helper</h5>
+<pre style="margin: 0; box-shadow: none;"><code class="language-json" data-trim>
+{
+  "success": true,
+  "message": "OK",
+  "data": { ... },
+  "meta": { pagination, ... }
+}
+</code></pre>
+    </div>
+  </div>
+  <p style="margin-top: 16px;">Plus <strong>FormRequest</strong> per endpoint, <strong>JsonResource</strong> per model, <strong>Exception handler</strong> API-aware.</p>
+</section>
+
+<!-- ============== JILID 2 - SCHEMA EVOLUTION ============== -->
+<section>
+  <h2>Schema Evolution di Jilid 2</h2>
+  <h3 style="margin-top: 16px; font-size: 1.1rem;">Penambahan Kolom</h3>
+  <div class="pills" style="margin-bottom: 20px;">
+    <span class="pill success">users.avatar</span>
+    <span class="pill success">users.is_active</span>
+    <span class="pill success">users.last_login_at, last_login_ip</span>
+    <span class="pill success">users.roles → string (owner/admin/kasir)</span>
+    <span class="pill">categories.slug, description, icon, color</span>
+    <span class="pill">categories.sort_order, is_active</span>
+    <span class="pill warning">orders.order_number (INV-YYYYMMDD-XXXX)</span>
+    <span class="pill warning">orders.status (pending/paid/cancelled/refunded)</span>
+    <span class="pill warning">orders.subtotal, discount, tax</span>
+    <span class="pill warning">orders.amount_paid, change_amount</span>
+    <span class="pill warning">orders.customer_name, notes</span>
+  </div>
+  <p><strong>Strategi migration:</strong> Backfill data lama agar tidak NULL. <code>order_number</code> di-generate untuk order historis, role <code>'user'</code> di-map ke <code>'kasir'</code>.</p>
+</section>
+
+<!-- ============== INSTALL VPS - INTRO ============== -->
+<section>
+  <div class="phase-tag">Praktik · Deploy</div>
+  <h2>Install Backend Laravel ke VPS</h2>
+  <p>Goal: aplikasi bisa diakses di internet via domain, bukan cuma di <code>localhost:8000</code>.</p>
+  <h3 style="margin-top: 24px; font-size: 1.1rem;">Stack Production</h3>
+  <div class="pills">
+    <span class="pill">Ubuntu 22.04 LTS</span>
+    <span class="pill">Nginx</span>
+    <span class="pill">PHP 8.3-FPM</span>
+    <span class="pill">MySQL 8</span>
+    <span class="pill">Composer 2</span>
+    <span class="pill">Certbot (HTTPS)</span>
+    <span class="pill">Supervisor (queue)</span>
+  </div>
+</section>
+
+<!-- ============== INSTALL VPS - LANGKAH ============== -->
+<section>
+  <h2>Langkah Deploy ke VPS</h2>
+  <ol class="steps" style="font-size: 0.85em;">
+    <li>
+      <strong>Provisioning VPS</strong> — pilih provider (Niagahoster, Biznet, Hetzner), spec minimum 1 vCPU / 2 GB RAM / 40 GB SSD.
+    </li>
+    <li>
+      <strong>SSH + Hardening</strong> — <code>ssh root@ip</code>, buat user non-root, disable root login, install UFW firewall.
+    </li>
+    <li>
+      <strong>Install Stack</strong> — <code>apt install nginx mysql-server php8.3-fpm php8.3-{mysql,xml,curl,mbstring,zip,gd,intl} composer git</code>
+    </li>
+    <li>
+      <strong>Clone Project</strong> — <code>git clone &lt;repo&gt; /var/www/pos</code>, <code>composer install --no-dev --optimize-autoloader</code>
+    </li>
+    <li>
+      <strong>Setup .env Production</strong> — <code>APP_ENV=production</code>, <code>APP_DEBUG=false</code>, DB credential, <code>php artisan key:generate</code>
+    </li>
+    <li>
+      <strong>Migrate &amp; Cache</strong> — <code>php artisan migrate --force</code>, <code>config:cache</code>, <code>route:cache</code>, <code>view:cache</code>
+    </li>
+    <li>
+      <strong>Nginx vhost</strong> — point <code>root /var/www/pos/public</code>, set <code>fastcgi_pass</code> ke PHP-FPM.
+    </li>
+    <li>
+      <strong>HTTPS dengan Certbot</strong> — <code>certbot --nginx -d pos.domainmu.com</code> → auto-renew tiap 90 hari.
+    </li>
+  </ol>
+</section>
+
+<!-- ============== INSTALL VPS - NGINX ============== -->
+<section>
+  <h2>Nginx Vhost Snippet</h2>
+<pre><code class="language-nginx" data-trim>
+server {
+    listen 80;
+    server_name pos.domainmu.com;
+    root /var/www/pos/public;
+    index index.php;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    location ~ /\.ht { deny all; }
+
+    client_max_body_size 10M;
+}
+</code></pre>
+  <p style="margin-top: 12px; font-size: 0.85em;">
+    Setelah <code>nginx -t</code> + <code>systemctl reload nginx</code> → website live. Lalu jalankan <code>chown -R www-data:www-data storage bootstrap/cache</code>.
+  </p>
+</section>
+
+<!-- ============== INSTALL VPS - GOTCHAS ============== -->
+<section>
+  <h2>Common Gotchas Saat Deploy</h2>
+  <div class="cards">
+    <div class="card danger">
+      <span class="num-tag">1</span>
+      <h4>Permission Storage</h4>
+      <p>Folder <code>storage/</code> dan <code>bootstrap/cache/</code> WAJIB writable oleh user PHP-FPM (biasanya www-data). Kalau tidak → error 500.</p>
+    </div>
+    <div class="card warning">
+      <span class="num-tag">2</span>
+      <h4>APP_KEY Hilang</h4>
+      <p>Generate fresh dengan <code>php artisan key:generate</code>. Tanpa ini, session dan encryption gagal.</p>
+    </div>
+    <div class="card danger">
+      <span class="num-tag">3</span>
+      <h4>Storage Symlink</h4>
+      <p>Jangan lupa <code>php artisan storage:link</code> untuk akses upload via URL.</p>
+    </div>
+    <div class="card warning">
+      <span class="num-tag">4</span>
+      <h4>APP_DEBUG=true di Prod</h4>
+      <p>EXPOSE stack trace + DB credentials ke publik. Wajib <code>false</code> di production.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== BUILD APK ============== -->
+<section>
+  <div class="phase-tag">Praktik · Mobile</div>
+  <h2>Build APK POS Cafe Mobile App</h2>
+  <p>Build Flutter app jadi APK siap install di HP kasir.</p>
+  <h3 style="margin-top: 24px; font-size: 1.1rem;">Checklist Pre-Build</h3>
+  <ul class="feat-list">
+    <li>Update <code>baseUrl</code> di Flutter app → arah ke <code>https://pos.domainmu.com/api</code></li>
+    <li>Update <code>android/app/build.gradle</code> → <code>applicationId</code>, <code>versionName</code></li>
+    <li>Generate <strong>keystore</strong> untuk signing (simpan dengan aman, jangan hilang!)</li>
+    <li>Konfigurasi <code>key.properties</code> dan <code>signingConfigs</code> di gradle</li>
+  </ul>
+</section>
+
+<!-- ============== BUILD APK - COMMAND ============== -->
+<section>
+  <h2>Build APK — Command Line</h2>
+<pre><code class="language-bash" data-trim>
+# Masuk ke project Flutter
+cd /Users/bahri/development/fic11/flutter_pos_app
+
+# Bersihkan build sebelumnya
+flutter clean
+flutter pub get
+
+# Build APK release (signed)
+flutter build apk --release
+
+# Output ada di:
+# build/app/outputs/flutter-apk/app-release.apk
+
+# Build per architecture (file lebih kecil)
+flutter build apk --release --split-per-abi
+
+# Build App Bundle untuk Play Store
+flutter build appbundle --release
+</code></pre>
+  <p style="margin-top: 12px; font-size: 0.85em;">
+    APK <code>--split-per-abi</code> menghasilkan 3 file (arm, arm64, x86_64) yang lebih kecil dari APK universal.
+  </p>
+</section>
+
+<!-- ============== ISTIRAHAT ============== -->
+<section class="sect-hdr">
+  <div class="label">Break</div>
+  <h1>Istirahat 1 Jam</h1>
+  <p class="sub">12:00 – 13:00 WIB</p>
+  <p style="opacity: 0.7; margin-top: 24px;">Lanjut sesi 2 jam 13:00 — siapkan rasa lapar belajar.</p>
+</section>
+
+<!-- ============== SESSION 2 HEADER ============== -->
+<section class="sect-hdr">
+  <div class="label">Sesi Kedua</div>
+  <div class="num-big">02</div>
+  <h1>Jilid 3 &amp; AI Development</h1>
+  <p class="sub">13:00 – 15:00 WIB</p>
+</section>
+
+<!-- ============== JILID 3 INTRO ============== -->
+<section>
+  <div class="phase-tag">Jilid 3</div>
+  <h2>Apa yang Baru?</h2>
+  <p>Enam fitur production-grade yang mengubah project dari "demo-able" ke "deployable ke real cafe":</p>
+  <div class="cards col-3">
+    <div class="card success">
+      <span class="num-tag">01</span>
+      <h4>Cash Session</h4>
+      <p>Tracking duit fisik per shift kasir + variance check tutup kasir.</p>
+    </div>
+    <div class="card warning">
+      <span class="num-tag">02</span>
+      <h4>Promo / Voucher</h4>
+      <p>3 tipe diskon: persen, rupiah, B1G1, dengan kode voucher.</p>
+    </div>
+    <div class="card danger">
+      <span class="num-tag">03</span>
+      <h4>Refund</h4>
+      <p>Refund order, restore stok, reconciliation shift kasir.</p>
+    </div>
+    <div class="card">
+      <span class="num-tag">04</span>
+      <h4>Reports Expansion</h4>
+      <p>Tambah 4 jenis report: promo usage, sales analytics, inventory.</p>
+    </div>
+    <div class="card">
+      <span class="num-tag">05</span>
+      <h4>Play Store Compliance</h4>
+      <p>Account deletion API + Privacy policy public URL.</p>
+    </div>
+    <div class="card success">
+      <span class="num-tag">06</span>
+      <h4>UI &amp; Security Polish</h4>
+      <p>Dashboard cleanup + fix back-button logout vulnerability.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== JILID 3 - FEATURE TIMELINE ============== -->
+<section>
+  <h2>Timeline Fitur Jilid 3</h2>
+  <div style="font-size: 0.8em;">
+    <div class="row head"><div class="col">Fitur</div><div class="col">Dampak</div></div>
+    <div class="row"><div class="col"><strong>Cash Session (Shift)</strong></div><div class="col">Tabel <code>cash_sessions</code> + buka/tutup shift kasir + variance</div></div>
+    <div class="row"><div class="col"><strong>Promo / Voucher</strong></div><div class="col">Server-side discount validation, 3 tipe diskon</div></div>
+    <div class="row"><div class="col"><strong>Play Store Compliance</strong></div><div class="col">Privacy policy public URL + API delete account</div></div>
+    <div class="row"><div class="col"><strong>Refund Order</strong></div><div class="col">Restore stok + reconciliation shift kasir</div></div>
+    <div class="row"><div class="col"><strong>Reports Expansion</strong></div><div class="col">4 jenis report baru: promo usage, analytics, inventory</div></div>
+    <div class="row"><div class="col"><strong>Package Fix</strong></div><div class="col">Fix typo <code>maatwebsiteo</code> → <code>maatwebsite/excel</code></div></div>
+    <div class="row"><div class="col"><strong>Security Fix</strong></div><div class="col">Cache header anti back-button logout</div></div>
+  </div>
+</section>
+
+<!-- ============== CASH SESSION DETAIL ============== -->
+<section>
+  <div class="phase-tag">Fitur 01</div>
+  <h2>Cash Session — Konsep</h2>
+  <p>POS profesional WAJIB tracking duit fisik per shift. Tanpa ini, kalau ada selisih, tidak ada cara accountable.</p>
+  <h3 style="margin-top: 16px; font-size: 1.1rem;">Flow</h3>
+  <ol class="steps" style="font-size: 0.85em;">
+    <li><strong>Buka Shift</strong> — kasir input modal awal (<code>opening_float</code>) + label shift (Pagi/Siang/Malam).</li>
+    <li><strong>Order otomatis attach</strong> ke shift aktif (via Model boot event).</li>
+    <li><strong>Tutup Shift</strong> — kasir hitung fisik di laci → server hitung expected → simpan variance.</li>
+    <li><strong>Force Close</strong> — admin bisa paksa tutup kalau kasir lupa.</li>
+  </ol>
+  <div class="quote" style="margin-top: 24px;">
+    Variance = physical_count − (opening_float + cash_in − cash_out + cash_revenue)
+  </div>
+</section>
+
+<!-- ============== CASH SESSION SCHEMA ============== -->
+<section>
+  <h2>Cash Session — Schema</h2>
+<pre><code class="language-sql" data-trim>
+cash_sessions
+├── id, user_id → users
+├── shift_label (Pagi/Siang/Malam)
+├── opening_float, opening_note, opened_at
+├── cash_in, cash_out
+├── physical_count, expected_cash, variance
+├── closing_note, closed_at
+└── timestamps
+
+INDEX (user_id, closed_at) → quick "current session" lookup
+
+orders
+└── + cash_session_id → cash_sessions (nullable)
+</code></pre>
+  <p style="margin-top: 12px; font-size: 0.85em;">
+    Detail step ada di <code>docs/16-cash-sessions.md</code>
+  </p>
+</section>
+
+<!-- ============== PROMO DETAIL ============== -->
+<section>
+  <div class="phase-tag">Fitur 02</div>
+  <h2>Promo — 3 Tipe Diskon</h2>
+  <div class="cards col-3">
+    <div class="card">
+      <span class="num-tag">A</span>
+      <h4>Percent</h4>
+      <p>Diskon 1-100% dari subtotal.<br><em>Contoh: WEEKEND15 = 15%</em></p>
+    </div>
+    <div class="card warning">
+      <span class="num-tag">B</span>
+      <h4>Rupiah</h4>
+      <p>Potongan rupiah tetap, min(value, subtotal).<br><em>Contoh: NEW5K = Rp 5.000</em></p>
+    </div>
+    <div class="card success">
+      <span class="num-tag">C</span>
+      <h4>B1G1</h4>
+      <p>Buy 1 Get 1: untuk tiap qty ≥ 2, diskon = harga × floor(qty/2).</p>
+    </div>
+  </div>
+  <h3 style="margin-top: 24px; font-size: 1.1rem;">Validasi Server-Side</h3>
+  <div class="pills">
+    <span class="pill">isLive() check active</span>
+    <span class="pill">starts_at ≤ now ≤ ends_at</span>
+    <span class="pill">subtotal ≥ min_subtotal</span>
+    <span class="pill success">computeDiscount() = single source of truth</span>
+  </div>
+  <p style="margin-top: 16px; font-size: 0.85em;">
+    Flutter app TIDAK boleh hitung diskon sendiri — selalu hit <code>POST /api/promos/apply</code>.
+  </p>
+</section>
+
+<!-- ============== REFUND ============== -->
+<section>
+  <div class="phase-tag">Fitur 03</div>
+  <h2>Refund Flow</h2>
+  <p>Refund bukan cuma update status — ada 3 efek yang harus konsisten:</p>
+  <ol class="steps" style="font-size: 0.85em;">
+    <li>
+      <strong>Mark Order</strong> — <code>status = REFUNDED</code>, simpan <code>refund_reason</code>, <code>refund_note</code>, <code>refunded_by_user_id</code>.
+    </li>
+    <li>
+      <strong>Restore Stok</strong> — untuk tiap order_item: <code>Product::increment('stock', $qty)</code>.
+    </li>
+    <li>
+      <strong>Reconciliation Shift</strong> — <code>cash_session.cash_out += refund_amount</code> agar variance shift tetap balanced.
+    </li>
+  </ol>
+  <p style="margin-top: 16px; font-size: 0.9em;">
+    Semua dilakukan dalam <code>DB::transaction()</code> — atomic. Hanya <strong>Owner</strong> yang boleh refund (via <code>OrderPolicy::refund</code>).
+  </p>
+</section>
+
+<!-- ============== REPORTS EXPANSION ============== -->
+<section>
+  <div class="phase-tag">Fitur 04</div>
+  <h2>Reports — Dari 3 jadi 7 Jenis</h2>
+  <div class="diff">
+    <div class="before">
+      <h5>Jilid 2 (3 reports)</h5>
+      <ul>
+        <li>Summary</li>
+        <li>Product Sales</li>
+        <li>Close Cashier</li>
+      </ul>
+    </div>
+    <div class="after">
+      <h5>Jilid 3 (+ 4 reports)</h5>
+      <ul>
+        <li>Promo Usage — pemakaian promo + total diskon</li>
+        <li>Sales Analytics — peak hour, best day, top categories</li>
+        <li>Inventory — stock value, low stock, last sold date</li>
+        <li>Export multi-format (xlsx, csv, pdf, print)</li>
+      </ul>
+    </div>
+  </div>
+  <p style="margin-top: 16px;">Detail di <code>docs/18-reports.md</code></p>
+</section>
+
+<!-- ============== PLAY STORE COMPLIANCE ============== -->
+<section>
+  <div class="phase-tag">Fitur 05</div>
+  <h2>Play Store Compliance</h2>
+  <p>Google Play 2024+ <strong>WAJIB</strong> punya 2 hal kalau app mengumpulkan data user:</p>
+  <div class="cards">
+    <div class="card warning">
+      <span class="num-tag">A</span>
+      <h4>Privacy Policy URL</h4>
+      <p>Public URL yang bisa diakses tanpa login. Di kita: <code>/privacy</code> di domain backend.</p>
+    </div>
+    <div class="card danger">
+      <span class="num-tag">B</span>
+      <h4>Account Deletion</h4>
+      <p>User harus bisa hapus akun dari dalam app, tidak cuma minta email. Endpoint: <code>DELETE /api/account</code>.</p>
+    </div>
+  </div>
+  <h3 style="margin-top: 24px; font-size: 1.1rem;">Pattern Aman: Anonymize + Soft Delete</h3>
+<pre style="font-size: 0.5em;"><code class="language-php" data-trim>
+DB::transaction(function () use ($user) {
+    $user->forceFill([
+        'name' => '[akun dihapus]',
+        'email' => 'deleted-'.$user->id.'@deleted.local',
+        'avatar' => null, 'phone' => null, 'is_active' => false,
+    ])->saveQuietly();
+    $user->tokens()->delete();   // revoke semua API token
+    $user->delete();             // soft delete
+});
+</code></pre>
+</section>
+
+<!-- ============== SECURITY: BACK BUTTON ============== -->
+<section>
+  <div class="phase-tag">Fitur 06</div>
+  <h2>Security Fix: Back-Button Logout</h2>
+  <p>Bug: setelah logout, tekan back-button browser → halaman authenticated MASIH muncul (dari cache).</p>
+  <div class="diff">
+    <div class="before">
+      <h5>Vulnerable</h5>
+<pre style="margin: 0; box-shadow: none; font-size: 0.9em;"><code class="language-php" data-trim>
+Route::middleware('auth')->group(function () {
+    // halaman authenticated...
+});
+</code></pre>
+    </div>
+    <div class="after">
+      <h5>Fix</h5>
+<pre style="margin: 0; box-shadow: none; font-size: 0.9em;"><code class="language-php" data-trim>
+Route::middleware([
+    'auth',
+    'cache.headers:no_store;no_cache;must_revalidate;max_age=0'
+])->group(function () { ... });
+</code></pre>
+    </div>
+  </div>
+  <p style="margin-top: 16px; font-size: 0.9em;">
+    Header HTTP <code>Cache-Control: no-store</code> paksa browser fetch ulang, bukan ambil dari history.
+  </p>
+</section>
+
+<!-- ============== CLAUDE AI HEADER ============== -->
+<section class="sect-hdr">
+  <div class="label">Bagian Akhir</div>
+  <h1>AI-Powered Development</h1>
+  <p class="sub">Analisis &amp; Tambah Fitur dengan Claude AI</p>
+</section>
+
+<!-- ============== KENAPA AI ============== -->
+<section>
+  <h2>Kenapa Pakai Claude AI?</h2>
+  <div class="quote">
+    AI bukan untuk gantikan developer. AI buat developer 10x lebih cepat — selama Anda tahu apa yang Anda minta.
+  </div>
+  <div class="cards" style="margin-top: 24px;">
+    <div class="card success">
+      <span class="num-tag">01</span>
+      <h4>Lebih Cepat</h4>
+      <p>Boilerplate (FormRequest, Resource, Migration) langsung jadi. Anda fokus ke logic bisnis.</p>
+    </div>
+    <div class="card">
+      <span class="num-tag">02</span>
+      <h4>Pair Programming</h4>
+      <p>AI sebagai partner brainstorm: tanya pattern, tradeoff, edge case.</p>
+    </div>
+    <div class="card warning">
+      <span class="num-tag">03</span>
+      <h4>Belajar Lebih Cepat</h4>
+      <p>Tanya "kenapa pakai X, bukan Y?" — dapat explanation langsung dengan contoh.</p>
+    </div>
+    <div class="card danger">
+      <span class="num-tag">04</span>
+      <h4>Catatan Penting</h4>
+      <p>Wajib REVIEW output AI. Test sebelum push. AI bisa halusinasi method atau library yang tidak ada.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== TOOLS ============== -->
+<section>
+  <h2>Tools yang Kita Pakai</h2>
+  <div class="cards col-3">
+    <div class="card">
+      <span class="num-tag">CLI</span>
+      <h4>Claude Code</h4>
+      <p>Anthropic official CLI. Edit file langsung, jalanin command, baca log. Di-install global.</p>
+    </div>
+    <div class="card">
+      <span class="num-tag">Web</span>
+      <h4>Claude.ai</h4>
+      <p>Untuk brainstorm tanpa side-effect ke filesystem. Diskusi arsitektur, review kode.</p>
+    </div>
+    <div class="card">
+      <span class="num-tag">IDE</span>
+      <h4>Cursor / Continue.dev</h4>
+      <p>IDE plugin: chat inline + autocomplete. Cocok untuk edit kecil dan refactor.</p>
+    </div>
+  </div>
+  <h3 style="margin-top: 24px; font-size: 1.1rem;">Setup Hari Ini: Claude Code</h3>
+<pre><code class="language-bash" data-trim>
+npm install -g @anthropic-ai/claude-code
+claude login         # login dengan Anthropic account
+cd /path/to/project
+claude               # mulai chat di project context
+</code></pre>
+</section>
+
+<!-- ============== PROMPT FRAMEWORK ============== -->
+<section>
+  <h2>Framework Prompt yang Efektif</h2>
+  <p>Prompt asal-asalan = output asal-asalan. Pakai struktur 5-bagian:</p>
+  <ol class="steps" style="font-size: 0.85em;">
+    <li>
+      <strong>Context</strong> — "Saya punya Laravel POS project di <code>/path</code>. Stack: Laravel 13, Sanctum, Stisla theme."
+    </li>
+    <li>
+      <strong>Goal</strong> — "Saya mau bikin fitur X yang melakukan Y untuk user Z."
+    </li>
+    <li>
+      <strong>Constraints</strong> — "Gunakan pattern existing: FormRequest untuk validasi, Resource untuk API response."
+    </li>
+    <li>
+      <strong>Verification</strong> — "Test dengan curl POST endpoint A → expect status 201 dengan field B, C."
+    </li>
+    <li>
+      <strong>Explanation</strong> — "Setelah generate, jelaskan kenapa pilih approach itu, dan trade-off-nya."
+    </li>
+  </ol>
+</section>
+
+<!-- ============== DEMO PROMPT EXAMPLE ============== -->
+<section>
+  <h2>Demo: Tambah Fitur Loyalty Point</h2>
+  <p><strong>Goal:</strong> Customer dapat poin per Rp 10.000 belanja. Redeem 100 poin = diskon Rp 10.000.</p>
+<pre style="font-size: 0.5em;"><code class="language-text" data-trim>
+PROMPT ke Claude AI:
+
+"Saya punya Laravel POS project. Stack: Laravel 13, Sanctum, Bootstrap+Stisla.
+Schema lengkap ada di docs/07-models-migrations-pos.md.
+
+Tolong tambahkan fitur Loyalty Point:
+
+1. Migration: tambah tabel `customer_points` (id, customer_phone, balance, timestamps)
+   dan tabel `point_transactions` (id, customer_phone, order_id, type[earn/redeem],
+   amount, timestamps)
+
+2. Logic: saat order create, kalau ada customer_phone → earn 1 poin per Rp 10.000 subtotal.
+   Saat order create dengan redeem_points → kurangi balance, hitung diskon Rp 100 per poin.
+
+3. API endpoint: GET /api/customers/{phone}/points → balance + recent transactions
+
+4. UI: di order detail web, tampilkan poin yang earned/redeemed.
+
+Ikuti pattern existing: FormRequest, Resource, Policy, helper rupiah().
+Generate dengan DB::transaction. Jelaskan setelah jadi kenapa pilih schema seperti itu."
+</code></pre>
+</section>
+
+<!-- ============== AI WORKFLOW ============== -->
+<section>
+  <h2>Workflow Coding dengan AI</h2>
+  <div class="cards">
+    <div class="card">
+      <span class="num-tag">1</span>
+      <h4>Plan</h4>
+      <p>Diskusi requirement &amp; design di chat sebelum coding. AI bantu identifikasi edge case yang tidak Anda pikirkan.</p>
+    </div>
+    <div class="card success">
+      <span class="num-tag">2</span>
+      <h4>Generate</h4>
+      <p>Minta AI buat file (migration, model, controller, view). Review per file, jangan blind accept.</p>
+    </div>
+    <div class="card warning">
+      <span class="num-tag">3</span>
+      <h4>Test</h4>
+      <p>Jalankan <code>migrate</code>, hit endpoint, klik UI. AI bisa salah — Anda yang validasi.</p>
+    </div>
+    <div class="card danger">
+      <span class="num-tag">4</span>
+      <h4>Iterate</h4>
+      <p>Kalau ada bug, balik ke AI dengan error message lengkap. Jangan minta "fix" tanpa context.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== DOKUMENTASI TUTORIAL ============== -->
+<section>
+  <h2>Dokumentasi Tutorial: 19 Step</h2>
+  <p>Untuk peserta yang mau replay materi, sudah disiapkan tutorial step-by-step di folder <code>docs/</code> dalam ZIP source code:</p>
+  <div style="font-size: 0.7em; columns: 2; column-gap: 32px; margin-top: 20px;">
+    <p><strong>00</strong> Overview &amp; Stack</p>
+    <p><strong>01</strong> Setup Project</p>
+    <p><strong>02</strong> Database Baseline</p>
+    <p><strong>03</strong> Auth (Fortify + Sanctum)</p>
+    <p><strong>04</strong> Layout &amp; Sidebar</p>
+    <p><strong>05</strong> Blade Components</p>
+    <p><strong>06</strong> Helpers &amp; i18n</p>
+    <p><strong>07</strong> Models &amp; Migrations POS</p>
+    <p><strong>08</strong> Seeders</p>
+    <p><strong>09</strong> Role &amp; Policy</p>
+    <p><strong>10</strong> Dashboard Real-Time</p>
+    <p><strong>11</strong> CRUD Categories</p>
+    <p><strong>12</strong> CRUD Products</p>
+    <p><strong>13</strong> CRUD Users</p>
+    <p><strong>14</strong> Profile Page</p>
+    <p><strong>15</strong> Orders + Struk + PDF + Excel</p>
+    <p><strong>16</strong> Cash Sessions</p>
+    <p><strong>17</strong> Promos</p>
+    <p><strong>18</strong> Reports (7 jenis)</p>
+    <p><strong>19</strong> API Mobile</p>
+  </div>
+  <p style="margin-top: 24px; text-align: center;">
+    <strong>Tiap step bisa langsung di-paste ke AI</strong> → kode auto-generated. Hemat waktu setup.
+  </p>
+</section>
+
+<!-- ============== SHARE SOURCECODE ============== -->
+<section>
+  <h2>Share Sourcecode</h2>
+  <p>Setelah sesi ini, akan dibagikan dalam bentuk ZIP:</p>
+  <div class="cards">
+    <div class="card">
+      <span class="num-tag">ZIP</span>
+      <h4>Backend Project</h4>
+      <p><code>laravel-pos-backend.zip</code><br>
+      State terakhir dengan semua fitur Jilid 1, 2, dan 3.</p>
+      <p style="margin-top: 8px;">Termasuk folder <code>docs/</code> berisi 19 step tutorial.</p>
+    </div>
+    <div class="card success">
+      <span class="num-tag">ZIP</span>
+      <h4>Flutter Project</h4>
+      <p><code>flutter_pos_app.zip</code><br>
+      Mobile app yang konsumsi API backend.</p>
+      <p style="margin-top: 8px;">Update <code>baseUrl</code> di <code>lib/core/constants/api_constants.dart</code>.</p>
+    </div>
+  </div>
+  <h3 style="margin-top: 24px; font-size: 1.1rem;">Channel Distribusi</h3>
+  <div class="pills">
+    <span class="pill">Email peserta</span>
+    <span class="pill">Grup Telegram FIC11</span>
+    <span class="pill">Recording Zoom (3 hari kerja)</span>
+  </div>
+</section>
+
+<!-- ============== HOMEWORK ============== -->
+<section>
+  <h2>Latihan Mandiri</h2>
+  <p>Untuk dapat real benefit dari Jilid 3, coba salah satu (atau semua):</p>
+  <ol class="steps" style="font-size: 0.85em;">
+    <li>
+      <strong>Deploy ke VPS pribadi.</strong> Bisa pakai VPS gratis (Oracle Cloud Always Free) atau berbayar (mulai Rp 50rb/bulan).
+    </li>
+    <li>
+      <strong>Tambah 1 fitur baru dengan AI.</strong> Contoh: loyalty point, multi-cabang, payment gateway, supplier management.
+    </li>
+    <li>
+      <strong>Buat unit test</strong> untuk OrderController::store — minimal happy path + 2 edge case (stok habis, shift belum buka).
+    </li>
+    <li>
+      <strong>Setup CI/CD</strong> dengan GitHub Actions: auto run <code>php artisan test</code> + <code>pint --test</code> per PR.
+    </li>
+    <li>
+      <strong>Submit ke Play Store</strong> — APK signed + privacy policy URL. Bonus: app Anda live di Play Store.
+    </li>
+  </ol>
+</section>
+
+<!-- ============== Q&A ============== -->
+<section class="center">
+  <h1 style="border: none;">Sesi Tanya Jawab</h1>
+  <p style="font-size: 1.2rem; color: var(--g500); margin: 32px 0;">
+    Ada pertanyaan? Silakan unmute atau ketik di chat.
+  </p>
+  <div class="pills" style="justify-content: center; display: flex;">
+    <span class="pill">Deploy issue?</span>
+    <span class="pill">Schema design?</span>
+    <span class="pill">AI prompt tricky?</span>
+    <span class="pill">Bug spesifik?</span>
+  </div>
+</section>
+
+<!-- ============== TERIMA KASIH ============== -->
+<section class="cover">
+  <div class="logo-box">FIC11</div>
+  <h1>Terima Kasih</h1>
+  <div class="subtitle">Sampai ketemu di Jilid 4 — Production Hardening &amp; Testing</div>
+  <div class="meta" style="margin-top: 60px;">
+    <p><strong>Code with Bahri</strong></p>
+    <p style="opacity: 0.8;">saiful.bahri.tl@gmail.com</p>
+  </div>
+  <div class="meta">
+    <span class="badge">YouTube</span>
+    <span class="badge">Instagram</span>
+    <span class="badge">Telegram FIC11</span>
+  </div>
+</section>
+
+</div>
+</div>
+
+<div class="footer">
+  <span>FIC11 Jilid 3 · 7 Juni 2026</span>
+  <span>Code with Bahri</span>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    width: 1280,
+    height: 800,
+    margin: 0.04,
+    plugins: [ RevealHighlight, RevealNotes ],
+    transition: 'fade',
+});
+</script>
+</body>
+</html>
